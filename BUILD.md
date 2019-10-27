@@ -2,7 +2,8 @@
 
 From within the top-level directory:
 
- ```mkdir build
+ ```
+ mkdir build
  cd build
  cmake ..
  make

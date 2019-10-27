@@ -10,7 +10,8 @@ This repository contains the Janus library, a supporting library called Ute, and
 
 From within the top-level directory:
 
- ```mkdir build
+ ```
+ mkdir build
  cd build
  cmake ..
  make
