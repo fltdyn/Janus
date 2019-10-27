@@ -1,0 +1,19 @@
+PROJECT(pugixml)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+SET(CMAKE_DEBUG_POSTFIX "D")
+
+SET(PugixmlSrcFiles
+	foreach.hpp
+	pugiconfig.hpp
+	pugixml.cpp
+	pugixml.hpp
+)
+
+SOURCE_GROUP("Source Files" FILES ${PugixmlSrcFiles})
+
+ADD_LIBRARY(pugixml STATIC ${PugixmlSrcFiles})
+SET_TARGET_PROPERTIES(pugixml PROPERTIES PREFIX "lib")
+TARGET_INCLUDE_DIRECTORIES(pugixml PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+INSTALL(DIRECTORY "." DESTINATION "include" FILES_MATCHING PATTERN "*.hpp")
+INSTALL(TARGETS pugixml DESTINATION lib)

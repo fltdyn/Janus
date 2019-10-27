@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE DAVEfunc SYSTEM "../../dtd/DAVEfunc.dtd">
+<!--<!DOCTYPE DAVEfunc SYSTEM "http://larda/Reference/Dave-ML/DAVEfunc.dtd">-->
+<!-- $Revision: 1.13 $ -->
+<DAVEfunc>
+
+  <fileHeader>
+    <author name="Rob Porter" org="DST Group" email="Robert.Porter@dst.defence.gov.au"/>
+    <fileCreationDate date="2018-04-09"/>
+    <description>Simple test of setVarDef function</description>
+  </fileHeader>
+
+  <!-- TEST CASE 0 (Ensuring normal user added functions still work as expected) -->
+  <variableDef name="input00"    varID="input00"    units="ND" initialValue="0.0"><isInput /></variableDef>
+
+  <variableDef name="output00"   varID="output00"   units="ND" initialValue="0.0">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        var setVarDefStickyTmp     := 51.0;
+        var setVarDefInternal00Tmp := 52.0;
+        var setVarDefTmp           := 53.0;
+        copysign( -1.0, 1.0) * poly01( input00, 0.5, 1.5) + bound( 11.0, 0.0, 10.0);
+      ]]></script>
+    </calculation>
+    <isOutput />
+  </variableDef>
+
+  <!-- TEST CASE 1 (Testing setVarDef can be utilised within control structures) -->
+  <variableDef name="output01"   varID="output01" units="ND" initialValue="0.0" />
+
+  <variableDef name="incrementer" varID="incrementer" units="ND">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        for ( var i := 0; i < 2; i += 1) {
+          if ( i == 0)
+            setVarDefSticky ( output01, output01 + 1.0);
+          else
+            setVarDefSticky( output01, output01 + 2.0);
+        }
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <!-- TEST CASE 2 (Testing that one setVarDef can update the input to another, and that pre-parsed scripts can be parsed again) -->
+  <variableDef name="input02"    varID="input02"    units="ND" initialValue="0.0"><isInput /></variableDef>
+  <variableDef name="internal02" varID="internal02" units="ND" initialValue="0.0" />
+  <variableDef name="output02"   varID="output02"   units="ND" initialValue="0.0" />
+
+  <variableDef name="function02" varID="function02" units="ND">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        setVarDefInternal02 ( /*internal02*/7, input02);
+        setVarDefSticky( output02, internal02);
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <!-- TEST CASE 3 (Testing that setting up to 10 variables works) -->
+  <variableDef name="input03"     varID="input03"     units="ND" initialValue="0.0"><isInput /></variableDef>
+  <variableDef name="output03_00" varID="output03_00" units="ND" initialValue="0.0" />
+  <variableDef name="output03_01" varID="output03_01" units="ND" initialValue="0.0" />
+  <variableDef name="output03_02" varID="output03_02" units="ND" initialValue="0.0" />
+  <variableDef name="output03_03" varID="output03_03" units="ND" initialValue="0.0" />
+  <variableDef name="output03_04" varID="output03_04" units="ND" initialValue="0.0" />
+  <variableDef name="output03_05" varID="output03_05" units="ND" initialValue="0.0" />
+  <variableDef name="output03_06" varID="output03_06" units="ND" initialValue="0.0" />
+  <variableDef name="output03_07" varID="output03_07" units="ND" initialValue="0.0" />
+  <variableDef name="output03_08" varID="output03_08" units="ND" initialValue="0.0" />
+  <variableDef name="output03_09" varID="output03_09" units="ND" initialValue="0.0" />
+
+  <variableDef name="function03" varID="function03" units="ND">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        setVarDefSticky( 
+          output03_00, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03, output03_05, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03, output03_05, input03,
+          output03_06, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03, output03_05, input03,
+          output03_06, input03, output03_07, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03, output03_05, input03,
+          output03_06, input03, output03_07, input03,
+          output03_08, input03
+        );
+        setVarDefSticky( 
+          output03_00, input03, output03_01, input03,
+          output03_02, input03, output03_03, input03,
+          output03_04, input03, output03_05, input03,
+          output03_06, input03, output03_07, input03,
+          output03_08, input03, output03_09, input03
+        );
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <!-- TEST CASE 4 (Infinite loop detection test) -->
+  <variableDef name="internal04_00" varID="internal04_00" units="ND" initialValue="12.34"></variableDef>
+  <variableDef name="internal04_01" varID="internal04_01" units="ND" initialValue="56.78"></variableDef>
+
+  <variableDef name="function04_00" varID="function04_00" units="ND">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        setVarDefSticky( internal04_00, internal04_01);
+        internal04_00;
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <variableDef name="function04_01" varID="function04_01" units="ND">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        setVarDefSticky( internal04_01, internal04_00);
+        function04_00;
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <!-- TEST CASE 5 (Dependent function evaluation) -->
+  <variableDef name="internal05_00" varID="internal05_00" units="ND" initialValue="0.0" ></variableDef>
+  <variableDef name="internal05_01" varID="internal05_01" units="ND" initialValue="10.0"></variableDef>
+  <variableDef name="output05_00"   varID="output05_00"   units="ND"></variableDef>
+  
+  <variableDef name="output05_01"   varID="output05_01"   units="ND" initialValue="0.0" >
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        /* setting variables is sticky */
+        setVarDefSticky( internal05_00, 2, internal05_01, 12);
+        var tmp := output05_00; // tmp = 24
+        
+        setVarDefSticky( internal05_00, -2, internal05_01, 8);
+        tmp - output05_00;
+      ]]></script>
+    </calculation>
+  </variableDef>
+  
+  <breakpointDef name="bp_05_00" bpID="bp_05_00">
+    <bpVals>
+      -2 -1 0 1 2
+    </bpVals>
+  </breakpointDef>
+
+  <breakpointDef name="bp_05_01" bpID="bp_05_01">
+    <bpVals>
+      8 9 10 11 12
+    </bpVals>
+  </breakpointDef>
+
+  <function name="fn_function05">
+    <independentVarRef varID="internal05_00" min="-2" max="2"  interpolate="linear" extrapolate="both" />
+    <independentVarRef varID="internal05_01" min="8"  max="12" interpolate="linear" extrapolate="both" />
+    <dependentVarRef   varID="output05_00" />
+    <functionDefn>
+      <griddedTableDef gtID="gt_function05">
+        <breakpointRefs>
+          <bpRef bpID="bp_05_00" />
+          <bpRef bpID="bp_05_01" />
+        </breakpointRefs>
+        <dataTable>
+          <!--          8   9  10  11  12 -->
+          <!-- -2 --> -16 -18 -20 -22 -24
+          <!-- -1 -->  -8  -9 -10 -11 -12
+          <!--  0 -->   0   0   0   0   0
+          <!--  1 -->   8   9  10  11  12
+          <!--  2 -->  16  18  20  22  24
+        </dataTable>
+      </griddedTableDef>
+    </functionDefn>
+  </function>
+
+  <!-- TEST CASE 6 (Non-sticky test) -->
+  <variableDef name="internal06_00" varID="internal06_00" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_01" varID="internal06_01" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_02" varID="internal06_02" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_03" varID="internal06_03" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_04" varID="internal06_04" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_05" varID="internal06_05" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_06" varID="internal06_06" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_07" varID="internal06_07" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_08" varID="internal06_08" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_09" varID="internal06_09" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_10" varID="internal06_10" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_11" varID="internal06_11" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_12" varID="internal06_12" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_13" varID="internal06_13" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_14" varID="internal06_14" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_15" varID="internal06_15" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_16" varID="internal06_16" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_17" varID="internal06_17" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_18" varID="internal06_18" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_19" varID="internal06_19" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_20" varID="internal06_20" units="ND" initialValue="0.0"></variableDef>
+  <variableDef name="internal06_21" varID="internal06_21" units="ND" initialValue="0.0"></variableDef>
+
+  <variableDef name="output06_00"   varID="output06_00"   units="ND" initialValue="0.0" >
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        setVarDef( internal06_00, 52.0);
+        output06_00 := internal06_00 * internal06_00;
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <variableDef name="output06_01"   varID="output06_01"   units="ND" initialValue="0.0" >
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        setVarDef ( internal06_01, 52.0);
+        internal06_01;
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <variableDef name="output06_02"   varID="output06_02"   units="ND" initialValue="0.0" >
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        var tmp := getJanusValueQuietly( /* internal05_00 */10);
+        setVarDef( internal06_02, 52.0);
+        internal06_02
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+  <variableDef name="output06_03"   varID="output06_03"   units="ND" initialValue="0.0" >
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        setVarDef( 
+          internal06_00,  1.0,
+          internal06_01,  2.0,
+          internal06_02,  3.0,
+          internal06_03,  4.0,
+          internal06_04,  5.0,
+          internal06_05,  6.0,
+          internal06_06,  7.0,
+          internal06_07,  8.0,
+          internal06_08,  9.0,
+          internal06_09, 10.0
+        );
+        setVarDef( 
+          internal06_10, 11.0,
+          internal06_11, 12.0,
+          internal06_12, 13.0,
+          internal06_13, 14.0,
+          internal06_14, 15.0,
+          internal06_15, 16.0,
+          internal06_16, 17.0,
+          internal06_17, 18.0,
+          internal06_18, 19.0,
+          internal06_19, 20.0
+        );
+        setVarDef( 
+          internal06_20, 21.0
+        );
+          internal06_00 + internal06_01
+        + internal06_02 + internal06_03
+        + internal06_04 + internal06_05
+        + internal06_06 + internal06_07
+        + internal06_08 + internal06_09
+        + internal06_10 + internal06_11
+        + internal06_12 + internal06_13
+        + internal06_14 + internal06_15
+        + internal06_16 + internal06_17
+        + internal06_18 + internal06_19
+        + internal06_20 + internal06_21
+      ]]></script>
+    </calculation>
+  </variableDef>
+
+</DAVEfunc>

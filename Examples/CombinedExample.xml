@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE DAVEfunc SYSTEM "../../dtd/DAVEfunc.dtd">
+<!--<!DOCTYPE DAVEfunc SYSTEM "http://larda/Reference/Dave-ML/DAVEfunc.dtd">-->
+<!-- $Revision: 1.13 $ -->
+<DAVEfunc>
+
+  <fileHeader>
+    <author name="Rob Porter" org="DST Group" email="Robert.Porter@dst.defence.gov.au"/>
+    <fileCreationDate date="2019-10-26"/>
+    <description>Dataset to demonstrate use of gridded tables</description>
+  </fileHeader>
+
+  <!-- TEST CASE 0 -->
+
+  <!-- Inputs -->
+  <variableDef name="angleOfAttack" varID="angleOfAttack" units="deg" initialValue="0.0">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="reynoldsNumber" varID="reynoldsNumber" units="ND" initialValue="0.36e6">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="ambientDensity" varID="ambientDensity" units="kg m-3" initialValue="1.225">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="trueAirspeed" varID="trueAirspeed" units="m s-1" initialValue="100.0">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="referenceArea" varID="referenceArea" units="m2" initialValue="25.0">
+    <isInput/>
+  </variableDef>
+
+  <!-- Internal -->
+  <variableDef name="dragCoefficient" varID="dragCoefficient" units="ND"/>
+
+  <variableDef name="dynamicPressure" varID="dynamicPressure" units="Pa">
+    <calculation>
+      <math>
+        <apply>
+          <times/>
+          <cn>0.5</cn>
+          <ci>ambientDensity</ci>
+          <ci>trueAirspeed</ci>
+          <ci>trueAirspeed</ci>
+        </apply>
+      </math>
+    </calculation>
+  </variableDef>
+
+  <!-- Output -->
+  <variableDef name="drag" varID="drag" units="N">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        dynamicPressure * referenceArea * dragCoefficient;
+      ]]></script>
+    </calculation>
+    <isOutput />
+  </variableDef>
+
+  <!-- Breakpoints -->
+  <breakpointDef name="bp_angleOfAttack" bpID="bp_angleOfAttack" units="deg">
+    <description>Angle of attack breakpoints for drag coefficient gridded table</description>
+    <bpVals>0.0 10.0 20.0 30.0</bpVals>
+  </breakpointDef>
+
+  <breakpointDef name="bp_reynoldsNumber" bpID="bp_reynoldsNumber" units="ND">
+    <description>Reynolds number breakpoints for drag coefficient gridded table</description>
+    <bpVals>0.36e6 0.49e6 0.70e6</bpVals>
+  </breakpointDef>
+
+  <!-- Functions -->
+  <function name="fn_dragCoefficient">
+    <independentVarRef varID="reynoldsNumber" min="0.36e6" max="0.70e6" extrapolate="neither"/>
+    <independentVarRef varID="angleOfAttack" min="0.0" max="30.0" extrapolate="neither"/>
+    <dependentVarRef varID="dragCoefficient"/>
+    <functionDefn name="fnd_dragCoefficient">
+      <griddedTable name="gt_dragCoefficient">
+        <breakpointRefs>
+          <bpRef bpID="bp_reynoldsNumber"/>
+          <bpRef bpID="bp_angleOfAttack"/>
+        </breakpointRefs>
+        <dataTable>
+          0.0050 0.0100 0.300 0.580 
+          0.0058 0.0120 0.310 0.585
+          0.0061 0.0125 0.320 0.595
+        </dataTable>
+      </griddedTable>
+    </functionDefn>
+  </function>
+
+</DAVEfunc>

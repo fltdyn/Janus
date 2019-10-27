@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE DAVEfunc SYSTEM "../../dtd/DAVEfunc.dtd">
+<!--<!DOCTYPE DAVEfunc SYSTEM "http://larda/Reference/Dave-ML/DAVEfunc.dtd">-->
+<!-- $Revision: 1.13 $ -->
+<DAVEfunc>
+
+  <fileHeader>
+    <author name="Rob Porter" org="DST Group" email="Robert.Porter@dst.defence.gov.au"/>
+    <fileCreationDate date="2019-10-26"/>
+    <description>Dataset to demonstrate use of JanusVariableManager</description>
+  </fileHeader>
+
+  <!-- TEST CASE 0 -->
+  <variableDef name="input00" varID="input00" units="nm h-1" initialValue="0.0"><isInput /></variableDef>
+
+  <variableDef name="output00" varID="output00" units="nm h-1" initialValue="0.0">
+    <calculation>
+      <script type="exprtk"><![CDATA[
+        input00;
+      ]]></script>
+    </calculation>
+    <isOutput />
+  </variableDef>
+
+</DAVEfunc>

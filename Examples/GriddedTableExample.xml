@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE DAVEfunc SYSTEM "../../dtd/DAVEfunc.dtd">
+<!--<!DOCTYPE DAVEfunc SYSTEM "http://larda/Reference/Dave-ML/DAVEfunc.dtd">-->
+<!-- $Revision: 1.13 $ -->
+<DAVEfunc>
+
+  <fileHeader>
+    <author name="Rob Porter" org="DST Group" email="Robert.Porter@dst.defence.gov.au"/>
+    <fileCreationDate date="2018-04-09"/>
+    <description>Dataset to demonstrate use of gridded tables</description>
+  </fileHeader>
+
+  <!-- TEST CASE 0 -->
+  <variableDef name="angleOfAttack" varID="angleOfAttack" units="deg" initialValue="0.0">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="reynoldsNumber" varID="reynoldsNumber" units="ND" initialValue="0.36e6">
+    <isInput/>
+  </variableDef>
+
+  <variableDef name="dragCoefficient" varID="dragCoefficient" units="ND">
+    <isOutput/>
+  </variableDef>
+
+  <breakpointDef name="bp_angleOfAttack" bpID="bp_angleOfAttack" units="deg">
+    <description>Angle of attack breakpoints for drag coefficient gridded table</description>
+    <bpVals>0.0 10.0 20.0 30.0</bpVals>
+  </breakpointDef>
+
+  <breakpointDef name="bp_reynoldsNumber" bpID="bp_reynoldsNumber" units="ND">
+    <description>Reynolds number breakpoints for drag coefficient gridded table</description>
+    <bpVals>0.36e6 0.49e6 0.70e6</bpVals>
+  </breakpointDef>
+
+  <function name="fn_dragCoefficient">
+    <independentVarRef varID="reynoldsNumber" min="0.36e6" max="0.70e6" extrapolate="neither"/>
+    <independentVarRef varID="angleOfAttack" min="0.0" max="30.0" extrapolate="neither"/>
+    <dependentVarRef varID="dragCoefficient"/>
+    <functionDefn name="fnd_dragCoefficient">
+      <griddedTable name="gt_dragCoefficient">
+        <breakpointRefs>
+          <bpRef bpID="bp_reynoldsNumber"/>
+          <bpRef bpID="bp_angleOfAttack"/>
+        </breakpointRefs>
+        <dataTable>
+          0.0050 0.0100 0.300 0.580 
+          0.0058 0.0120 0.310 0.585
+          0.0061 0.0125 0.320 0.595
+        </dataTable>
+      </griddedTable>
+    </functionDefn>
+  </function>
+
+</DAVEfunc>

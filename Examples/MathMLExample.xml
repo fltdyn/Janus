@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE DAVEfunc SYSTEM "../../dtd/DAVEfunc.dtd">
+<DAVEfunc xmlns="http://daveml.nasa.gov/2008/DAVEML">
+  
+  <fileHeader>
+    <author name="Dan Newman" 
+            org="Quantitative Aeronautics" 
+            email="dmn@aeronautics.com.au"/>
+    <creationDate date="17 April 2009"/>
+    <fileVersion>$Revision: 1.10 $</fileVersion>
+    <description>Some MathML csymbol constructs, and namespaces which validate fully.</description>
+  </fileHeader>
+
+  <variableDef name="Input 1" varID="x" units="ND" initialValue="0.1"><isInput /></variableDef>
+  <variableDef name="Input 2" varID="y" units="ND" initialValue="0.2"><isInput /></variableDef>
+
+  <variableDef name="Output" varID="result" units="ND" >
+    <description>Calculate fmod( atan2( x, y), 0.2 * PI).</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>                            <!-- fmod( atan2(x,y), 0.2*pi ) -->
+          <csymbol definitionURL="file://C++ Standard - ANSI ISO IEC 14882, Second edition 2003-10-15.pdf Section 5.6.4">fmod</csymbol>
+          <apply>
+            <csymbol definitionURL="http://daveml.nasa.gov/function_spaces.html#atan2">atan2</csymbol>
+            <ci>x</ci>
+            <ci>y</ci>
+          </apply>
+          <apply>
+            <times/>
+            <cn>0.2</cn>
+            <pi/>
+          </apply>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="sign(x)" varID="sign" units="ND" >
+    <description>Calculate sign( x, y).</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply> <!-- sign( x, y) -->
+          <csymbol definitionURL="http://pubs.opengroup.org/onlinepubs/000095399/functions/copysign.html">sign</csymbol>
+          <ci>x</ci>
+          <ci>y</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="cosd(x)" varID="cosd" units="ND" >
+    <description>Calculate cos( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">cosd</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="sind(x)" varID="sind" units="ND" >
+    <description>Calculate sin( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">sind</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="tand(x)" varID="tand" units="ND" >
+    <description>Calculate tan( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">tand</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="cscd(x)" varID="cscd" units="ND" >
+    <description>Calculate csc( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">cscd</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="secd(x)" varID="secd" units="ND" >
+    <description>Calculate sec( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">secd</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="cotd(x)" varID="cotd" units="ND" >
+    <description>Calculate cot( x) where x is in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">cotd</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="arccosd(x)" varID="arccosd" units="ND" >
+    <description>Calculate arccos( x) in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">arccosd</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="arcsind(x)" varID="arcsind" units="ND" >
+    <description>Calculate arcsin( x) in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">arcsind</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="arctand(x)" varID="arctand" units="ND" >
+    <description>Calculate arctan( x) in degrees.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="http://en.wikipedia.org/wiki/Trigonometric_functions">arctand</csymbol>
+          <ci>x</ci>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+  <variableDef name="bound(x,y,z)" varID="bound" units="ND" >
+    <description>Calculate x bounded by -10 and 10.</description>
+    <calculation>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <csymbol definitionURL="file://dstomath">bound</csymbol>
+          <ci>x</ci>
+          <cn>0.5</cn>
+          <cn>1.0</cn>
+        </apply>
+      </math>
+    </calculation>
+    <isOutput/>
+  </variableDef>
+
+</DAVEfunc>
+
+
