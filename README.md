@@ -4,6 +4,12 @@ Janus is a Dynamic Aerospace Vehicle Exchange Mark-up Language (DAVE-ML) C++ Int
 
 This repository contains the Janus library, a supporting library called Ute, and example use cases.
 
+## Resources ##
+
+- DST Group Janus website: https://www.dst.defence.gov.au/opportunity/janus-dynamic-aerospace-vehicle-exchange-mark-language-dave-ml-c-interpreter
+
+- DAVE-ML website: http://daveml.org/intro.html 
+
 ## Build ##
 
 ### Library Only ###
