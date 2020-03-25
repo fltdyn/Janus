@@ -816,12 +816,18 @@ namespace dstomath {
       if ( !isFsal_) {
         stateList_[i].k[0] = stateList_[i].xdt;
       }
-      stateList_[i].xn    = *stateList_[i].xptr;
-      *stateList_[i].xptr = stateList_[i].xn + dt * a[0] * stateList_[i].k[0];
+      stateList_[i].xn = *stateList_[i].xptr;
     }
 
     // remainder of loop
     for ( size_t j = 1; j < n; ++j) {
+      for ( size_t i = 0; i < nStateVars_; ++i) {
+        double dx( 0.0);
+        for ( size_t k = 0; k < j; ++k) {
+          dx += a[ k + ( j - 1) * ( n - 1)] * stateList_[i].k[k];
+        }
+        *stateList_[i].xptr = stateList_[i].xn + dt * dx;
+      }
       resetStateList();
       derivativeExecutive( t + c[ j - 1 ] * dt);
       if ( origNumStateVars != nStateVars_) {
@@ -833,11 +839,6 @@ namespace dstomath {
       }
       for ( size_t i = 0; i < nStateVars_; ++i) {
         stateList_[i].k[j] = stateList_[i].xdt;
-        double dx( 0.0);
-        for ( size_t k = 0; k <= j; ++k) {
-          dx += a[ k + j * ( n - 1)] * stateList_[i].k[k];
-        }
-        *stateList_[i].xptr = stateList_[i].xn + dt * dx;
       }
     }
 
