@@ -341,7 +341,7 @@ void Janus::setXmlFileName( const dstoute::aFileString& documentName,
   catch ( exception &excep) {
     throw_message( std::invalid_argument,
       setFunctionName( functionName)
-      << "\n - Can't initialise dependencies.\n - "
+      << "\n - Can't initialise dependencies in file \"" << dataFileName_ << "\"\n - "
       << excep.what()
     );
   }
