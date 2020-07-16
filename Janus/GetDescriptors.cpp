@@ -75,15 +75,27 @@ namespace janus
 
   const char* Janus::getJanusVersion( VersionType versionType) const
   {
+    ( void*) versionType;
+
+#ifdef JANUS_VERSION_SHORT
     if ( Janus::SHORT == versionType) {
       return JANUS_VERSION_SHORT;
     }
-    else if ( Janus::LONG == versionType) {
+#endif
+
+#ifdef JANUS_VERSION_LONG
+    if ( Janus::LONG == versionType) {
       return JANUS_VERSION_LONG;
     }
-    else {
+#endif
+    
+#ifdef JANUS_VERSION_HEX
+    if (Janus::HEX == versionType) {
       return JANUS_VERSION_HEX;
     }
+#endif
+    
+    return JANUS_LIBRARY_NAME;
   }
 
 //------------------------------------------------------------------------//
