@@ -52,7 +52,7 @@ namespace dstoute {
   class aList : public std::vector< _Tp, _Alloc >
   {
    public:
-#ifndef _MSC_VER
+#if !defined( _MSC_VER) || _MSC_VER >= 1920
    typedef _Tp    value_type;
    typedef _Alloc allocator_type;
    typedef size_t size_type;

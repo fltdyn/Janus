@@ -94,13 +94,13 @@ namespace dstoute {
    : public std::map< _Key, _Tp, _Compare, _Alloc >
   {
    public:
-     #ifndef _MSC_VER
+#if !defined( _MSC_VER) || _MSC_VER >= 1920
      typedef _Key                       key_type;
      typedef _Tp                        mapped_type;
      typedef std::pair<const _Key, _Tp> value_type;
      typedef _Compare                   key_compare;
      typedef _Alloc                     allocator_type;
-     #endif
+#endif
 
      typedef std::map< key_type, mapped_type, key_compare, allocator_type > fwd_map;
      typedef std::pair<const key_type, mapped_type> pair;
