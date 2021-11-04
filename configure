@@ -10,7 +10,7 @@
 # Fishermans Bend, VIC
 # AUSTRALIA, 3207
 #
-# Copyright 2005-2019 Commonwealth of Australia
+# Copyright 2005-2021 Commonwealth of Australia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this
 # software and associated documentation files (the "Software"), to deal in the Software
@@ -39,41 +39,3 @@ config_version_dec=2.3.0
 ac_configfile=Janus/JanusConfig.h
 ac_makefileconfig=Makefile.conf
 ac_configfile_header=_JANUS_CONFIG_H_
-
-#
-# Edit things to before configure here if required...
-# use functions:
-#   doLocalUsage()
-#   doPreConfigure()
-#   doPostConfigure()
-#
-doLocalUsage() {
-cat << _LT_EOF
-
-Janus Extra Options:
-  --with-deprecated     Allow use of deprecated Janus functions
-  --without-deprecated  Don't allow use of deprecated Janus functions (default)
-_LT_EOF
-}
-
-doPostConfigure() {
-  # Deprecated Janus functions
-  if [ "${without_deprecated}" == "no" ] || [ "${JANUS_USE_DEPRECATED}" == "yes" ]; then
-      doSetEnv ${ac_library_NAME}_USE_DEPRECATED yes
-      echo "Checking for deprecated functions ... yes"
-  else
-      echo "Checking for deprecated functions ... no"
-  fi
-}
-
-######################################
-# SHOULD NOT NEED TO EDIT BELOW HERE #
-######################################
-#
-# Run configure script library and execute.
-#
-parent_dir=${0%%configure}
-if [ "$parent_dir" != "" ]; then
-  cd $parent_dir
-fi
-source ./configure.in

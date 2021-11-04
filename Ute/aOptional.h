@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -59,7 +59,7 @@ namespace dstoute {
   struct aOptionalValidator
   {
     template<typename U = T>
-    static typename std::enable_if<!std::is_enum<U>::value, bool>::type
+    static typename std::enable_if<std::is_arithmetic<U>::value, bool>::type
     isValid( const T& v)
     {
       return v != std::numeric_limits<T>::max();
@@ -71,7 +71,7 @@ namespace dstoute {
       return v != std::numeric_limits<size_t>::max();
     }
     template<typename U = T>
-    static typename std::enable_if<!std::is_enum<U>::value, T>::type
+    static typename std::enable_if<std::is_arithmetic<U>::value, T>::type
     invalidValue()
     {
       return std::numeric_limits<T>::max();
@@ -162,6 +162,9 @@ namespace dstoute {
     bool isValid() const
     { return __validator::isValid( value_);}
 
+    static bool isValid( const T& value)
+    { return __validator::isValid(value);}
+
     void makeInvalid()
     { __makeInvalid();}
 
@@ -251,6 +254,84 @@ namespace dstoute {
 
   private:
     bool value_;
+    bool isValid_;
+  };
+
+  /** Special handling for tuples to support arbitrary types
+    */
+  template <typename... Ts>
+  class aOptional<std::tuple<Ts...>>
+  {
+  public:
+    aOptional() 
+      : value_{},
+      isValid_( false)
+    {}
+
+    aOptional( const std::tuple<Ts...>& value) 
+      : value_( value),
+      isValid_( true)
+    {}
+
+    aOptional<std::tuple<Ts...>>& operator= ( const aOptional<std::tuple<Ts...>>& rhs)
+    { value_ = rhs.value_; isValid_ = rhs.isValid_; return *this;}
+
+    operator std::tuple<Ts...>() const
+    { return value_;}
+
+    bool isValid() const
+    { return isValid_;}
+
+    void makeInvalid()
+    { isValid_ = false;}
+
+    std::tuple<Ts...>& value() 
+    { return value_;}
+
+    const std::tuple<Ts...>& value() const 
+    { return value_;}
+
+  private:
+    std::tuple<Ts...> value_;
+    bool isValid_;
+  };
+
+  /** Special handling for pairs to support arbitrary types
+  */
+  template <typename T1, typename T2>
+  class aOptional<std::pair<T1,T2>>
+  {
+  public:
+    aOptional() 
+      : value_{},
+      isValid_( false)
+    {}
+
+    aOptional( const std::pair<T1,T2>& value) 
+      : value_( value),
+      isValid_( true)
+    {}
+
+    aOptional<std::pair<T1,T2>>& operator= ( const aOptional<std::pair<T1,T2>>& rhs)
+    { value_ = rhs.value_; isValid_ = rhs.isValid_; return *this;}
+
+    operator std::pair<T1,T2>() const
+    { return value_;}
+
+    bool isValid() const
+    { return isValid_;}
+
+    void makeInvalid()
+    { isValid_ = false;}
+
+    std::pair<T1,T2>& value() 
+    { return value_;}
+
+    const std::pair<T1,T2>& value() const 
+    { return value_;}
+
+  private:
+    std::pair<T1,T2> value_;
     bool isValid_;
   };
 

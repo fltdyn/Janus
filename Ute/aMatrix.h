@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -128,19 +128,18 @@ namespace dstomath {
   //
   template <typename T> inline valarray<T> toStdValArray( const std::vector<T> &v)
   {
-    if ( !v.empty()) {
-      return valarray<T>( &const_cast< std::vector<T>& >( v)[0], v.size());
+    if ( v.empty()) {
+      return valarray<T>{};
     }
-    return valarray<T>();
+    return valarray<T>{ &v[ 0], v.size()};
   }
 
   template <typename T> inline std::vector<T> toStdVector( const valarray<T> &v)
   {
-    if ( v.size() != 0) {
-      return std::vector<T>( &const_cast< valarray<T>& >( v)[0],
-                             &const_cast< valarray<T>& >( v)[ v.size()]);
+    if ( v.size() == 0) {
+      return std::vector<T>{};
     }
-    return std::vector<T>();
+    return std::vector<T>{ std::begin( v), std::end( v)};
   }
 
   //
@@ -1272,7 +1271,6 @@ namespace dstomath {
       );
 
       size_t i, j, k;
-      double currentMax, currentValue;
       T scale(0);
 
       valarray<size_t> rowIndex( rows_);
@@ -1280,9 +1278,10 @@ namespace dstomath {
         rowIndex[i] = i;
       for ( k = 0; k < rows_; ++k) {
         i = k;
-        currentMax = am_math::abs( (*this)(k,k));
+        auto currentMax = std::abs( (*this)( k,k));
         for ( j = k + 1; j < rows_; ++j) {
-          if ((currentValue = am_math::abs((*this)(j,k))) > currentMax) {
+          const auto currentValue = std::abs( (*this)( j,k));
+          if ( currentValue > currentMax) {
             currentMax = currentValue;
             i  = j;
           }
@@ -2257,6 +2256,100 @@ namespace dstomath {
       (*this)(2,2) = (cos1_ * cos2_);
     }
 
+    static aMatrix<T> getEulerTransformMatrix( const valarray<T> &v)
+    {
+      math_range_check(
+        if ( v.size() != 3) {
+          throw std::invalid_argument( "getEulerTransformMatrix(valarray<T>): Array must have length 3.");
+        }
+      );
+      return getEulerTransformMatrix( v[0], v[1], v[2]);
+    }
+
+    static aMatrix<T> getEulerTransformMatrix( const T &psi, const T &theta, const T &phi)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrix( psi, theta, phi);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixPsi( const T &psi)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixPsi( psi);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixTheta( const T &theta)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixTheta( theta);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixPhi( const T &phi)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixPhi( phi);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixPsiTheta( const T &psi, const T& theta)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixPsiTheta( psi, theta);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixPsiPhi( const T &psi, const T& phi)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixPsiPhi( psi, phi);
+      return cache;
+    }
+
+    static aMatrix<T> getEulerTransformMatrixThetaPhi( const T &theta, const T& phi)
+    {
+      aMatrix<T> cache;
+      cache.eulerTransformMatrixThetaPhi( theta, phi);
+      return cache;
+    }
+
+    void transformAngleAboutVector( const T& alpha, const valarray<T>& vec)
+    {
+      math_range_check(
+        if ( vec.size() != 3) {
+          throw std::invalid_argument( "transformAngleAboutVector(alpha, vec): vec must be size = 3.");
+        }
+      );
+
+      const T cosa = ::cos( alpha);
+      const T sina = ::sin( alpha);
+      const T cosa1 = T( 1) - cosa;
+      const valarray<T> v = vec / ::sqrt( vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+
+      (*this).resize( 3, 3);
+
+      (*this)( 0, 0) = cosa + cosa1 * v[0] * v[0];
+      (*this)( 0, 1) = cosa1 * v[1] * v[0] + sina * v[2];
+      (*this)( 0, 2) = cosa1 * v[2] * v[0] - sina * v[1];
+
+      (*this)( 1, 0) = cosa1 * v[0] * v[1] - sina * v[2];
+      (*this)( 1, 1) = cosa + cosa1 * v[1] * v[1];
+      (*this)( 1, 2) = cosa1 * v[2] * v[1] + sina * v[0];
+
+      (*this)( 2, 0) = cosa1 * v[0] * v[2] + sina * v[1];
+      (*this)( 2, 1) = cosa1 * v[1] * v[2] - sina * v[0];
+      (*this)( 2, 2) = cosa + cosa1 * v[2] * v[2];
+    }
+
+    static aMatrix<T> getTransformAngleAboutVector( const T& alpha, const valarray<T>& vec)
+    {
+      aMatrix<T> cache;
+      cache.transformAngleAboutVector( alpha, vec);
+      return cache;
+    }
+
     //
     // The cross function with one vector argument returns the skew-symmetric
     // matrix associated with the cross product.
@@ -2280,6 +2373,13 @@ namespace dstomath {
       (*this)(2,0) = -v1[1];
       (*this)(2,1) =  v1[0];
       (*this)(2,2) =  T(0);
+    }
+
+    static aMatrix<T> getCross( const valarray<T>& v1)
+    {
+      aMatrix<T> cache;
+      cache.cross( v1);
+      return cache;
     }
 
     //
@@ -3376,6 +3476,53 @@ namespace dstomath {
     cp[1] = ( v1[2] * v2[0]) - ( v1[0] * v2[2]);
     cp[2] = ( v1[0] * v2[1]) - ( v1[1] * v2[0]);
     return cp;
+  }
+
+  //
+  // The following outer product functions are duplicated for speed increase.
+  //
+  template <typename T> inline aMatrix<T> outerProduct( const valarray<T> &v1, const valarray<T> &v2)
+  {
+    aMatrix<T> op( v1.size(), v2.size());
+    for ( size_t i = 0; i < v1.size(); ++i) {
+      for ( size_t j = 0; j < v2.size(); ++j) {
+        op(i,j) = v1[i] * v2[j];
+      }
+    }
+    return op;
+  }
+
+  template <typename T> inline aMatrix<T> outerProduct( const valarray<T> &v1, const aSubVector<T> &v2)
+  {
+    aMatrix<T> op( v1.size(), v2.size());
+    for ( size_t i = 0; i < v1.size(); ++i) {
+      for ( size_t j = 0; j < v2.size(); ++j) {
+        op(i,j) = v1[i] * v2[j];
+      }
+    }
+    return op;
+  }
+
+  template <typename T> inline aMatrix<T> outerProduct( const aSubVector<T> &v1, const valarray<T> &v2)
+  {
+    aMatrix<T> op( v1.size(), v2.size());
+    for ( size_t i = 0; i < v1.size(); ++i) {
+      for ( size_t j = 0; j < v2.size(); ++j) {
+        op(i,j) = v1[i] * v2[j];
+      }
+    }
+    return op;
+  }
+
+  template <typename T> inline aMatrix<T> outerProduct( const aSubVector<T> &v1, const aSubVector<T> &v2)
+  {
+    aMatrix<T> op( v1.size(), v2.size());
+    for ( size_t i = 0; i < v1.size(); ++i) {
+      for ( size_t j = 0; j < v2.size(); ++j) {
+        op(i,j) = v1[i] * v2[j];
+      }
+    }
+    return op;
   }
 
   //

@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -620,6 +620,8 @@ namespace dstomath {
      * integrands.
      */
     virtual void derivativeExecutive( const double &t) = 0;
+
+    virtual void onFailedAdaptiveStep() {}
 
     /**
      * Returns true during first integration pass, otherwise false.

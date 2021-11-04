@@ -1,6 +1,17 @@
 #ifndef __ABIMAP_H__
 #define __ABIMAP_H__
 
+// C++ Includes
+#include <map>
+#include <ostream>
+#include <type_traits>
+
+// Local Includes
+#include "aString.h"
+#include "aMap.h"
+#include "aMessageStream.h"
+#include "aOptional.h"
+
 //
 // DST Ute Library (Utilities Library)
 //
@@ -10,7 +21,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -29,17 +40,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 //
-
-// C++ Includes
-#include <map>
-#include <ostream>
-#include <type_traits>
-
-// Local Includes
-#include "aString.h"
-#include "aMap.h"
-#include "aMessageStream.h"
-#include "aOptional.h"
 
 //
 // Title:      aBiMap - Bi-directional version of std::map class.

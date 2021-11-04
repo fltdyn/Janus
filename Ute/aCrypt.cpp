@@ -7,7 +7,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -151,10 +151,29 @@ namespace dstoute {
       throw_message( logic_error, "aCrypt::generateRandomRsaKeys - OpenSSL random generation not initialised.");
     }
 
+#if OPENSSL_VERSION_NUMBER >= 0x00908000L
+    RSA* rsaKeys = RSA_new();
+    int ret = 0;
+    BIGNUM *bn = 0;
+    try {
+      bn = BN_new();
+      BN_set_word( bn, 17);
+      ret = RSA_generate_key_ex ( rsaKeys, 2048, bn, 0);
+      BN_free (bn);
+    }
+    catch (...) {
+      BN_free (bn);
+      throw_message( logic_error, aString( "aCrypt::generateRandomRsaKeys - RSA key generation failed with error: %").arg( ERR_get_error()));
+    }
+    if ( !ret) {
+      throw_message( logic_error, aString( "aCrypt::generateRandomRsaKeys - RSA key generation failed with error: %").arg( ERR_get_error()));
+    }
+#else
     RSA* rsaKeys = 0;
     if ( !( rsaKeys = RSA_generate_key( 2048, 17, NULL, NULL))) {
       throw_message( logic_error, aString( "aCrypt::generateRandomRsaKeys - RSA key generation failed with error: %").arg( ERR_get_error()));
     }
+#endif
 
     return rsaKeys;
   }

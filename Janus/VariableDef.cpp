@@ -7,7 +7,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2021 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -1423,6 +1423,11 @@ void VariableDef::setFunctionRef(
 
   for ( size_t i = 0; i < functionIndependentVarDefSize; ++i) {
     aOptionalSizeT indVarIndex = janus_->getFunction()[functionRef].getInDependentVarDef()[i].getVariableReference();
+    if ( indVarIndex > janus_->getVariableDef().size()) {
+      throw_message( std::out_of_range, 
+          "Independent variable " << janus_->getFunction()[functionRef].getInDependentVarDef()[i].getVarID() << 
+          " referenced from function " << janus_->getFunction()[functionRef].getName() << " does not exist.");
+    }
     independentVarRef_.push_back( indVarIndex);
 //    independentVariables[i) =
 //        janus_->getFunction()[ functionRef).getInDependentVarDef()[i).getVariableReference();

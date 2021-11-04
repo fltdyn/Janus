@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -101,6 +101,7 @@ namespace dstoute {
 
     // Input of form: 0.0:25.0:100.0,150.0:50.0:300.0
     aString               scaleDoubleList( const double &scale) const;
+    aString               convertDoubleList( const double &scale, const double& offset) const;
     aDoubleList           interpretDoubleList( bool doUniqueSort = false) const;
     std::valarray<double> interpretDoubleVector( bool doUniqueSort = false) const;
 
@@ -242,14 +243,14 @@ namespace dstoute {
   inline aString aString::toLowerCase() const
   {
     std::string s( *this);
-    std::transform( s.begin(), s.end(), s.begin(), std::ptr_fun< int, int>( std::tolower));
+    std::transform( s.begin(), s.end(), s.begin(), []( unsigned char c) -> unsigned char { return std::tolower( c); });
     return s;
   }
 
   inline aString aString::toUpperCase() const
   {
     aString s( *this);
-    std::transform( s.begin(), s.end(), s.begin(), std::ptr_fun< int, int>( std::toupper));
+    std::transform( s.begin(), s.end(), s.begin(), []( unsigned char c) -> unsigned char { return std::toupper( c); });
     return s;
   }
 
@@ -262,14 +263,14 @@ namespace dstoute {
   inline aString aString::trimLeft() const
   {
     aString s( *this);
-    s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun< int, int>( std::isspace))));
+    s.erase( s.begin(), std::find_if_not(s.begin(), s.end(), []( unsigned char c) -> bool { return std::isspace( c); }));
     return s;
   }
 
   inline aString aString::trimRight() const
   {
     aString s( *this);
-    s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun< int, int>( std::isspace))).base(), s.end());
+    s.erase( std::find_if_not( s.rbegin(), s.rend(), []( unsigned char c) -> bool { return std::isspace( c); }).base(), s.end());
     return s;
   }
 
@@ -428,7 +429,13 @@ namespace dstoute {
   }
 
   // Input of form: 0.0:25.0:100.0,150.0:50.0:300.0
-  inline aString aString::scaleDoubleList( const double &scale) const
+  inline aString aString::scaleDoubleList(const double& scale) const
+  {
+    return convertDoubleList( scale, 0.0);
+  }
+
+  // Input of form: 0.0:25.0:100.0,150.0:50.0:300.0
+  inline aString aString::convertDoubleList( const double &scale, const double &offset) const
   {
     aString scaledString;
     initStringToken();
@@ -436,12 +443,12 @@ namespace dstoute {
       aString levelToken = getStringToken( ",");
       levelToken.initStringToken();
       if ( levelToken.contains( ":")) {
-        double pMin  = levelToken.getStringToken( ":", false).toDouble() * scale;
+        double pMin  = levelToken.getStringToken( ":", false).toDouble() * scale + offset;
         double pStep = 1 * scale;
         if ( levelToken.count( ":") == 2) {
           pStep = levelToken.getStringToken( ":", false).toDouble() * scale;
         }
-        double pMax = levelToken.getStringToken( ":", false).toDouble() * scale;
+        double pMax = levelToken.getStringToken( ":", false).toDouble() * scale + offset;
         if ( scaledString.empty()) {
           scaledString = aString( "%:%:%").arg( pMin).arg( pStep).arg( pMax);
         }
@@ -451,10 +458,10 @@ namespace dstoute {
       }
       else {
         if ( scaledString.empty()) {
-          scaledString = aString( "%").arg( levelToken.toDouble() * scale);
+          scaledString = aString( "%").arg( levelToken.toDouble() * scale + offset);
         }
         else {
-          scaledString += aString( ",%").arg( levelToken.toDouble() * scale);
+          scaledString += aString( ",%").arg( levelToken.toDouble() * scale + offset);
         }
       }
     }

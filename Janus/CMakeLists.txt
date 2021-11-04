@@ -29,8 +29,6 @@
 
 PROJECT(Janus)
 
-# Write JanusConfig.h
-SET(JanusConfigSrcFile "${CMAKE_CURRENT_BINARY_DIR}/JanusConfig.h")
 readCfg(${CMAKE_CURRENT_SOURCE_DIR}/../configure "config_name;config_version_hex;config_version_dec")
 
 SET(JANUS_LIBRARY_DESCRIPTION ${config_name})
@@ -38,9 +36,6 @@ SET(JANUS_VERSION ${config_version_hex})
 SET(JANUS_VERSION_HEX ${config_version_hex})
 SET(JANUS_VERSION_SHORT ${config_version_dec})
 SET(JANUS_VERSION_LONG "Janus-${config_version_dec}")
-#SET(HAVE_QHULL6 TRUE)
-OPTION(HAVE_OPENSSL "Build with Open SSL" ON)
-CONFIGURE_FILE("JanusConfig.h.in" "${JanusConfigSrcFile}")
 
 SET(ThirdPartyDirectory ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty)
 
@@ -200,7 +195,7 @@ SET(JanusSrcFiles
 	VariableDefExprTkScript.cpp
 	VariableDefLuaScript.cpp
 	XmlElementDefinition.h
-	"${JanusConfigSrcFile}"
+	JanusConfig.h
 )
 
 SET(SrcFiles 
@@ -213,11 +208,6 @@ SOURCE_GROUP("Source Files" FILES ${SrcFiles})
 
 # Needed to be able to access JanusConfig.h
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
-IF(HAVE_OPENSSL)
-	FIND_PACKAGE(OpenSSL REQUIRED)
-	INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
-ENDIF()
 
 ADD_LIBRARY(Janus STATIC ${SrcFiles})
 SET_TARGET_PROPERTIES(Janus PROPERTIES PREFIX "lib")
@@ -235,4 +225,3 @@ TARGET_LINK_LIBRARIES(Janus Ute ${OPENSSL_LIBRARIES})
 
 INSTALL(DIRECTORY . DESTINATION "include/Janus/Janus" FILES_MATCHING PATTERN "*.h")
 INSTALL(TARGETS Janus DESTINATION lib)
-INSTALL(FILES "${JanusConfigSrcFile}" DESTINATION "include/Janus")

@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -65,11 +65,12 @@ namespace dstoute {
   enum BaseDimensions {
     BASE_LENGTH,
     BASE_MASS,
-    BASE_TIME,
     BASE_TEMP,
     BASE_CURRENT,
     BASE_MOLE,
     BASE_LIGHT,
+    BASE_ANGLE, // This is a workaround to prevent rad being convertible to and from ND, which, whilst technically correct, is almost always wrong within aUnits
+    BASE_TIME,
     BASE_SIZE
   };
 
@@ -82,11 +83,11 @@ namespace dstoute {
     aUnits( const aString &name, const aUnits &other);
     aUnits( const aString &name);
 
-    aString units() const         { return units_;}
-    double  value() const         { return value_;}
-    double  scale() const         { return scale_;}
-    double  offset() const        { return offset_;}
-    double  scaleToMetric() const { return scaleMetric_;}
+    const aString& units() const         { return units_;}
+    const double& value() const         { return value_;}
+    const double& scale() const         { return scale_;}
+    const double& offset() const        { return offset_;}
+    const double& scaleToMetric() const { return scaleMetric_;}
     int     baseDim( int i) const { return baseDim_[ i];}
 
     double valueSI() const        { return ( value_ - offset_) * scale_;}
@@ -134,8 +135,10 @@ namespace dstoute {
     aUnits operator/( const aUnits &other) const;
     aUnits operator/( const double &valueArg) const;
 
+    friend bool   isValidUnit( const aString& unit);
     friend bool   isCompatible( const aUnits &fromUnits, const aUnits &toUnits);
     friend double convert( const aUnits &fromUnits, const aUnits &toUnits);
+    friend double convertFromSI( const aUnits& toUnits, const double& val);
     friend double convert( const aUnits &fromUnits, const aUnits &toUnits, const double& value);
     friend double convertUsing( const aUnits &fromUnits, const aUnits &toUnits, const aUnits &convUnit);
     friend double convertUsing( const aUnits &fromUnits, const aUnits &toUnits, const aUnits &convUnit1, const aUnits &convUnit2);
@@ -164,9 +167,11 @@ namespace dstoute {
 
   typedef aList<aUnits> aUnitsList;
 
+  bool   isValidUnit( const aString& unit);
   bool   isCompatible( const aUnits &fromUnits, const aUnits &toUnits);
   double convert( const aUnits &fromUnits, const aUnits &toUnits);
   double convert( const aUnits &fromUnits, const aUnits &toUnits, const double& value);
+  double convertFromSI( const aUnits& toUnits, const double& val);
   double convertUsing( const aUnits &fromUnits, const aUnits &toUnits, const aUnits &convUnit);
   double convertUsing( const aUnits &fromUnits, const aUnits &toUnits, const aUnits &convUnit1, const aUnits &convUnit2);
   double deltaConvert( const aUnits &fromUnits, const aUnits &toUnits);
@@ -219,11 +224,12 @@ namespace dstoute {
     extern const int base_none[];
     extern const int base_length[];
     extern const int base_mass[];
-    extern const int base_time[];
     extern const int base_temp[];
     extern const int base_current[];
     extern const int base_mol[];
     extern const int base_lux[];
+    extern const int base_angle[]; // Technically not a dimension, but this prevents ND being convertible to and from rad, which is almost always a mistake in aUnits
+    extern const int base_time[];
 
     //
     // Define some units.
@@ -238,9 +244,10 @@ namespace dstoute {
     extern const aUnits u_A;
     extern const aUnits u_mol;
     extern const aUnits u_cd;
+    extern const aUnits u_rad; // Technically derived, but is treated as a base unit within aUnits
 
     // Derived Units
-    extern const aUnits u_rad;
+    // extern const aUnits u_rad;
     extern const aUnits u_Hz;
     extern const aUnits u_N;
     extern const aUnits u_Pa;

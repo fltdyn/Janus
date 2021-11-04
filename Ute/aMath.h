@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -157,6 +157,8 @@ namespace dstomath {
     return ( abs(v) < zero());
   }
   template <typename T> bool isNotZero( const T &v) {return !isZero(v);}
+  template <typename T> bool isPositive( const T& v) { return v >= zero();}
+  template <typename T> bool isNegative( const T& v) { return v <= -zero();}
 
   /** A value of zero scaled by the size of the value (greater than 1.0) being tested.
    *
@@ -359,6 +361,11 @@ namespace dstomath {
     return value;
   }
 
+  template<typename T> inline T boundPM( const T& value, const T& limit)
+  {
+    return bound<T>( value, -limit, limit);
+  }
+
   /** Compute Modulo of x between [0..y]
    * @param data1 : the modulo data ( x).
    * @param data2 : the interval data ( y).
@@ -476,6 +483,24 @@ namespace dstomath {
     return x * polynomial( x, args...) + c;
   }
 #endif
+
+template<typename T> 
+inline T safe_asin( const T& val)
+{
+  return asin( bound( val, T( -1), T( 1)));
+}
+
+template<typename T> 
+inline T safe_acos( const T& val)
+{
+  return acos( bound( val, T( -1), T( 1)));
+}
+
+template<typename T>
+inline T safe_sqrt( const T& val)
+{
+  return sqrt( max( 0.0, val));
+}
 
 } // end namespace dstomath
 

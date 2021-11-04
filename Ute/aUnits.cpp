@@ -7,7 +7,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -70,15 +70,16 @@ namespace dstoute {
     // Define the base unit types.
     //
     //                           L  M  T  K  A  M  C
-    const char *base_units[] = { "m", "kg", "s", "K", "A", "mol", "cd"};
-    const int base_none[]    = { 0, 0, 0, 0, 0, 0, 0};
-    const int base_length[]  = { 1, 0, 0, 0, 0, 0, 0};
-    const int base_mass[]    = { 0, 1, 0, 0, 0, 0, 0};
-    const int base_time[]    = { 0, 0, 1, 0, 0, 0, 0};
-    const int base_temp[]    = { 0, 0, 0, 1, 0, 0, 0};
-    const int base_current[] = { 0, 0, 0, 0, 1, 0, 0};
-    const int base_mol[]     = { 0, 0, 0, 0, 0, 1, 0};
-    const int base_lux[]     = { 0, 0, 0, 0, 0, 0, 1};
+    const char *base_units[] = { "m", "kg", "K", "A", "mol", "cd", "rad", "s"};
+    const int base_none[]    = { 0, 0, 0, 0, 0, 0, 0, 0};
+    const int base_length[]  = { 1, 0, 0, 0, 0, 0, 0, 0};
+    const int base_mass[]    = { 0, 1, 0, 0, 0, 0, 0, 0};
+    const int base_temp[]    = { 0, 0, 1, 0, 0, 0, 0, 0};
+    const int base_current[] = { 0, 0, 0, 1, 0, 0, 0, 0};
+    const int base_mol[]     = { 0, 0, 0, 0, 1, 0, 0, 0};
+    const int base_lux[]     = { 0, 0, 0, 0, 0, 1, 0, 0};
+    const int base_angle[]   = { 0, 0, 0, 0, 0, 0, 1, 0}; // Technically not a dimension, but this prevents ND being convertible to and from rad, which is almost always a mistake in aUnits
+    const int base_time[]    = { 0, 0, 0, 0, 0, 0, 0, 1};
 
     //
     // Unit prefix factors.
@@ -121,10 +122,11 @@ namespace dstoute {
     const aUnits u_A(    "A",   base_current); // Ampere (electric current)
     const aUnits u_mol(  "mol", base_mol);     // Mole (amount of substance)
     const aUnits u_cd(   "cd",  base_lux);     // Candela (luminous intensity)
+    const aUnits u_rad( "rad",  base_angle);   // Radian (angle) // Technically derived, but is treated as a base unit within aUnits
 
     // Derived Units
     // http://en.wikipedia.org/wiki/International_System_of_Units
-    const aUnits u_rad( "rad",   u_none);                                       // Radian (angle)
+    //const aUnits u_rad( "rad",   u_none);                                       // Radian (angle)
     const aUnits u_Hz(  "Hz",    pow( u_s, -1));                                // Hertz (frequency)
     const aUnits u_N(   "N",     compose( u_m, compose( u_kg, pow( u_s, -2)))); // Newton (force, weight)
     const aUnits u_Pa(  "Pa",    compose( u_N, pow( u_m, -2)));                 // Pascal (pressure, stress)
@@ -778,6 +780,16 @@ namespace dstoute {
     }
   }
 
+  bool isValidUnit( const aString& unit)
+  {
+    try {
+      findUnits( unit);
+      return true;
+    }
+    catch ( ...) {}
+    return false;
+  }
+
   bool isCompatible( const aUnits &fromUnits, const aUnits &toUnits)
   {
     for ( size_t i = 0; i < BASE_SIZE; ++i) {
@@ -802,6 +814,11 @@ namespace dstoute {
     // Convert apply sequence:
     // 1. Offset, 2. Scale, 3. Scale, 4. Offset.
     return ( value - fromUnits.offset_) * fromUnits.scale_ / toUnits.scale_ + toUnits.offset_;
+  }
+
+  double convertFromSI( const aUnits& toUnits, const double& val)
+  {
+    return val / ( toUnits.scale_ * toUnits.scaleMetric_) + toUnits.offset_;
   }
 
   double convertUsing( const aUnits &fromUnits, const aUnits &toUnits, const aUnits &convUnit)

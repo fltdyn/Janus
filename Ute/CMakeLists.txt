@@ -29,12 +29,6 @@
 
 PROJECT(Janus)
 
-# Write out UteConfig.h
-SET(HAVE_MATIO FALSE)
-OPTION(HAVE_OPENSSL "Build with Open SSL" ON)
-SET(UteConfigSrcFile "${CMAKE_CURRENT_BINARY_DIR}/UteConfig.h")
-CONFIGURE_FILE("UteConfig.h.in" "${UteConfigSrcFile}")
-
 SET(UteSrcFiles
 	aBiMap.h
 	aCrypt.cpp
@@ -57,7 +51,7 @@ SET(UteSrcFiles
 	aUnits.cpp
 	aUnits.h
 	exprtk_matrix.hpp
-	"${UteConfigSrcFile}"
+	UteConfig.h
 )
 
 SOURCE_GROUP("Source Files" FILES ${UteSrcFiles})
@@ -68,11 +62,6 @@ ADD_DEFINITIONS(-DNOMINMAX)
 INCLUDE_DIRECTORIES(..)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/..)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}) # for UteConfig.h
-
-IF(HAVE_OPENSSL)
-	FIND_PACKAGE(OpenSSL REQUIRED)
-	INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
-ENDIF()
 
 ADD_LIBRARY(Ute STATIC ${UteSrcFiles})
 SET_TARGET_PROPERTIES(Ute PROPERTIES PREFIX "lib")
@@ -90,5 +79,4 @@ IF(MSVC)
 ENDIF()
 
 INSTALL(DIRECTORY . DESTINATION "include/Ute" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-INSTALL(FILES "${UteConfigSrcFile}" DESTINATION "include/Ute")
 INSTALL(TARGETS Ute DESTINATION lib)

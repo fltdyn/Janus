@@ -1338,6 +1338,7 @@ namespace exprtk
             template <typename T> inline T trunc_impl(const T v, real_type_tag) { return T(static_cast<long long>(v));    }
 
             template <typename T> inline T const_pi_impl(real_type_tag) { return numeric::constant::pi; }
+            template <typename T> inline T const_pi_2_impl(real_type_tag) { return numeric::constant::pi_2; }
             template <typename T> inline T const_e_impl (real_type_tag) { return numeric::constant::e;  }
 
             template <typename T> inline T   abs_impl(const T v, int_type_tag) { return ((v >= T(0)) ? v : -v); }
@@ -18222,6 +18223,7 @@ namespace exprtk
       inline bool add_constants()
       {
          return add_pi      () &&
+                add_pi_2    () &&
                 add_epsilon () &&
                 add_infinity() ;
       }
@@ -18231,6 +18233,13 @@ namespace exprtk
          const typename details::numeric::details::number_type<T>::type num_type;
          static const T local_pi = details::numeric::details::const_pi_impl<T>(num_type);
          return add_constant("pi",local_pi);
+      }
+
+      inline bool add_pi_2()
+      {
+        const typename details::numeric::details::number_type<T>::type num_type;
+        static const T local_pi_2 = details::numeric::details::const_pi_2_impl<T>(num_type);
+        return add_constant("pi_2", local_pi_2);
       }
 
       inline bool add_epsilon()

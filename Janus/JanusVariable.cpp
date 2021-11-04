@@ -7,7 +7,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2021 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -50,11 +50,13 @@
 // C++ Includes
 #include <iostream>
 #include <sstream>
+#include <cassert>
 
 // Local Includes
 #include "JanusVariable.h"
 
 // Ute Includes
+#include <Ute/aMath.h>
 #include <Ute/aMessageStream.h>
 #include <Ute/aOptional.h>
 
@@ -343,6 +345,22 @@ const double& JanusVariable::value() const
   return value_;
 }
 
+const double& JanusVariable::valueOr( const double& defaultVal) const
+{
+  if ( isAvailable()) {
+    return value();
+  }
+  return defaultVal;
+}
+
+dstoute::aOptionalDouble JanusVariable::optionalValue() const
+{
+  if ( isAvailable()) {
+    return value();
+  }
+  return aOptionalDouble::invalidValue();
+}
+
 const aString& JanusVariable::stringValue() const
 {
   if ( isNotAvailable() || (variableType_ != janusString)) {
@@ -355,7 +373,6 @@ const aString& JanusVariable::stringValue() const
 // Return true if value has changed.
 bool JanusVariable::setValue( const double &val)
 {
-
   if ( variableType_ == janusInputVariable || variableType_ == janusInputOutputVariable)  {
     bool hasChanged = ( val != value_);
     value_ = val;
@@ -402,6 +419,46 @@ float JanusVariable::toFloat() const
 bool JanusVariable::toBool() const
 {
   return dstomath::isNotZero( value());
+}
+
+int JanusVariable::toIntOr( const int defaultValue) const
+{
+  if ( isAvailable()) {
+    return toInt();
+  }
+  return defaultValue;
+}
+
+unsigned int JanusVariable::toUnsignedIntOr( const unsigned int defaultValue) const
+{
+  if ( isAvailable()) {
+    return toUnsignedInt();
+  }
+  return defaultValue;
+}
+
+std::size_t JanusVariable::toSize_tOr( const size_t defaultValue) const
+{
+  if ( isAvailable()) {
+    return toSize_t();
+  }
+  return defaultValue;
+}
+
+float JanusVariable::toFloatOr( const float& defaultValue) const
+{
+  if ( isAvailable()) {
+    return toFloat();
+  }
+  return defaultValue;
+}
+
+bool JanusVariable::toBoolOr( const bool defaultValue) const
+{
+  if ( isAvailable()) {
+    return toBool();
+  }
+  return defaultValue;
 }
 
 aString JanusVariable::toString() const

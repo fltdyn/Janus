@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -52,7 +52,7 @@ namespace dstoute {
   class aList : public std::vector< _Tp, _Alloc >
   {
    public:
-#ifndef _MSC_VER
+#if !defined( _MSC_VER) || _MSC_VER > 1900
    typedef _Tp    value_type;
    typedef _Alloc allocator_type;
    typedef size_t size_type;
@@ -129,7 +129,7 @@ namespace dstoute {
    {
      typename fwd_list::const_iterator iter = find( __v);
      if ( iter != this->end()) {
-       return ( iter - this->begin());
+       return int( iter - this->begin());
      }
 
      return -1;
@@ -143,6 +143,13 @@ namespace dstoute {
        ++count;
      }
      return 0;
+   }
+
+   // Required since newer gcc version > 8.1.0
+   aList& operator= ( const aList &__al)
+   {
+     fwd_list::operator=( __al);
+     return *this;
    }
 
    template < typename _Tp2, size_t _N >

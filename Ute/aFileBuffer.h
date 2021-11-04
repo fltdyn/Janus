@@ -1,6 +1,8 @@
 #ifndef AFILEBUFFER_H_
 #define AFILEBUFFER_H_
 
+#include "UteConfig.h"
+
 //
 // DST Ute Library (Utilities Library)
 //
@@ -10,7 +12,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -47,7 +49,6 @@
 #include <stack>
 
 // Local Includes
-#include "UteConfig.h"
 #include "aString.h"
 
 namespace dstoute {
@@ -116,7 +117,7 @@ namespace dstoute {
     const T* operator+=( size_t delta)   { dataPtr_ += delta; return dataPtr_;}
     const T* operator-=( size_t delta)   { dataPtr_ -= delta; return dataPtr_;}
 
-    void setPos( const T* pos)           { if ( pos >= data_ && pos < dataEnd_) dataPtr_ = pos;}
+    void setPos( T* pos)                 { if ( pos >= data_ && pos < dataEnd_) dataPtr_ = pos;}
     void push()                          { posStack.push( dataPtr_);}
     void pop()                           { if ( posStack.size()) { dataPtr_ = posStack.top(); posStack.pop();}}
 

@@ -1,26 +1,31 @@
-/* Janus (DAVE-ML Interpreter)
- * Copyright (C) 2016 Commonwealth of Australia
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the DSTO Open Source Licence; either Version 1
- * of the Licence, or any later version, (see the COPYING file).
- *
- * This program is provided "AS IS" and DSTO and any copyright holder
- * in material included in the program or any modification (referred
- * to in the licence as contributors) make no representation and gives
- * NO WARRANTY of any kind, either EXPRESSED or IMPLIED, including, but
- * not limited to, IMPLIED WARRANTIES of MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE, NON-INFRINGEMENT, or the presence or absence of
- * defects or errors, whether discoverable or not. The entire risk as
- * to the quality and performance of the program is with you. Should the
- * program prove defective, you assume the cost of all necessary
- * servicing, repair or correction. See the DSTO Open Source Licence for
- * more details.
- *  
- * You should have received a copy of the DSTO Open Source Licence
- * along with this program; if not, write to Aerospace Division,
- * Defence Science and Technology Group, 506 Lorimer St Fishermans Bend 3207, Australia.
- */
+//
+// DST Janus Library (Janus DAVE-ML Interpreter Library)
+//
+// Defence Science and Technology (DST) Group
+// Department of Defence, Australia.
+// 506 Lorimer St
+// Fishermans Bend, VIC
+// AUSTRALIA, 3207
+//
+// Copyright 2005-2021 Commonwealth of Australia
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies
+// or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+// OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
  
 //------------------------------------------------------------------------//
 // Title:      Janus/Signals

@@ -1,6 +1,16 @@
 #ifndef __AMAP_H__
 #define __AMAP_H__
 
+// C++ Includes
+#include <map>
+#include <sstream>
+#include <type_traits>
+
+// Local Includes
+#include "aString.h"
+#include "aMessageStream.h"
+#include "aOptional.h"
+
 //
 // DST Ute Library (Utilities Library)
 //
@@ -10,7 +20,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2018 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -29,16 +39,6 @@
 // OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 //
-
-// C++ Includes
-#include <map>
-#include <sstream>
-#include <type_traits>
-
-// Local Includes
-#include "aString.h"
-#include "aMessageStream.h"
-#include "aOptional.h"
 
 //
 // Title:      aMap - An extended version of std::map
@@ -94,7 +94,7 @@ namespace dstoute {
    : public std::map< _Key, _Tp, _Compare, _Alloc >
   {
    public:
-     #ifndef _MSC_VER
+     #if !defined( _MSC_VER) || _MSC_VER > 1900
      typedef _Key                       key_type;
      typedef _Tp                        mapped_type;
      typedef std::pair<const _Key, _Tp> value_type;
@@ -139,6 +139,13 @@ namespace dstoute {
      void set( const key_type& __k, const mapped_type& __t)
      {
        (*this)[ __k] = __t;
+     }
+
+     // Required since newer gcc version > 8.1.0
+     aMap& operator= ( const aMap &__am)
+     {
+       fwd_map::operator=( __am);
+       return *this;
      }
 
      /*! Return a modifiable reference to a mapped type given the input key.

@@ -10,7 +10,7 @@
 // Fishermans Bend, VIC
 // AUSTRALIA, 3207
 //
-// Copyright 2005-2019 Commonwealth of Australia
+// Copyright 2005-2021 Commonwealth of Australia
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -59,6 +59,7 @@
 #include <Ute/aString.h>
 #include <Ute/aMath.h>
 #include <Ute/aUnits.h>
+#include <Ute/aOptional.h>
 
 // ----------------
 // Class Definition
@@ -113,6 +114,8 @@ class JanusVariable
   bool isMandatory() const       { return  isMandatory_;}
 
   virtual const double& value() const;
+  virtual const double& valueOr( const double& defaultVal) const;
+  dstoute::aOptionalDouble optionalValue() const;
   const dstoute::aString& stringValue() const;
 
   virtual bool setValue( const double &val);
@@ -122,6 +125,12 @@ class JanusVariable
   std::size_t  toSize_t() const;
   float        toFloat() const;
   bool         toBool() const;
+  
+  int          toIntOr( const int defaultValue) const;
+  unsigned int toUnsignedIntOr( const unsigned int defaultValue) const;
+  std::size_t  toSize_tOr( const size_t defaultValue) const;
+  float        toFloatOr( const float& defaultValue) const;
+  bool         toBoolOr( const bool defaultValue) const;
 
   dstoute::aString toString() const;
   dstoute::aString getRevisionString() const;
