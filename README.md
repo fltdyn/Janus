@@ -23,6 +23,20 @@ From within the top-level directory:
  make
  ```
 
+ For newer versions of CMake:
+
+ ```
+ mkdir build
+ cmake . -B build [options]
+ cmake --build build [options]
+ ```
+
+ When building with MSVC, use the "--config" flag to set the build type:
+
+ ```
+ cmake --build build --config [Release|Debug]
+ ```
+
 ### Library and Examples ###
 
 From within the top-level directory:
@@ -33,6 +47,8 @@ From within the top-level directory:
  cmake -DBUILD_EXAMPLES=ON ..
  make
  ```
+
+ To run the examples, you will need to copy the XML files in the Examples/ directory to the location of the built binaries.
 
 ## Primary Contributers ##
 

@@ -77,7 +77,6 @@ endif()
 target_include_directories(Ute
 	PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
-		#$<INSTALL_INTERFACE:>
 )
 
 if (MSVC)

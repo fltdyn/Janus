@@ -34,10 +34,6 @@ project(Janus
 	LANGUAGES C CXX
 )
 
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
-
 set(CMAKE_DEBUG_POSTFIX "D")
 
 find_program(CCACHE ccache)
