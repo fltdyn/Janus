@@ -27,9 +27,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(Janus)
-
-SET(UteSrcFiles
+add_library(Ute STATIC 
 	aBiMap.h
 	aCrypt.cpp
 	aCrypt.h
@@ -54,29 +52,39 @@ SET(UteSrcFiles
 	UteConfig.h
 )
 
-SOURCE_GROUP("Source Files" FILES ${UteSrcFiles})
+target_compile_features(Ute PRIVATE cxx_std_11)
 
-ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
-ADD_DEFINITIONS(-DNOMINMAX)
+if (UNIX) 
+	target_compile_options(Ute
+		PRIVATE 
+			$<$<CONFIG:RELEASE>:-O3>
+	)
+elseif (MSVC)
+	target_compile_options(Ute
+		PRIVATE 
+			$<$<CONFIG:RELEASE>:-O2>
+			-D_CRT_SECURE_NO_WARNINGS
+			-DNOMINMAX
+	)
+endif()
 
-INCLUDE_DIRECTORIES(..)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/..)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}) # for UteConfig.h
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	target_compile_options(Ute PRIVATE -fdiagnostics-color=always)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	target_compile_options(Ute PRIVATE -fcolor-diagnostics)
+endif()
 
-ADD_LIBRARY(Ute STATIC ${UteSrcFiles})
-SET_TARGET_PROPERTIES(Ute PROPERTIES PREFIX "lib")
+target_include_directories(Ute
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
+		#$<INSTALL_INTERFACE:>
+)
 
-TARGET_INCLUDE_DIRECTORIES(Ute PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/..")
-TARGET_INCLUDE_DIRECTORIES(Ute PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+if (MSVC)
+	target_include_directories(Ute
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/dirent>
+	)	
 
-IF(MSVC)
-	# MSVC builds require a ported version of dirent.h
-	SET(_dirent_directory "${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/dirent")
-	TARGET_INCLUDE_DIRECTORIES(Ute PUBLIC "${_dirent_directory}")
-	INSTALL(DIRECTORY "${_dirent_directory}/" DESTINATION "include" FILES_MATCHING PATTERN "*.h")
-
-    	SET_SOURCE_FILES_PROPERTIES(aString.cpp PROPERTIES COMPILE_FLAGS /bigobj)
-ENDIF()
-
-INSTALL(DIRECTORY . DESTINATION "include/Ute" FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-INSTALL(TARGETS Ute DESTINATION lib)
+	set_target_properties(Ute PROPERTIES COMPILE_FLAGS "/bigobj")
+endif()

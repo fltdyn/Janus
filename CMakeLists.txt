@@ -27,37 +27,33 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(Janus)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 
-IF( NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release)
-ENDIF()
+project(Janus
+	VERSION 2.3.0 
+	LANGUAGES C CXX
+)
 
-SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_FLAGS_DEBUG "-g")
-SET(CMAKE_DEBUG_POSTFIX "D")
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
-IF(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
-  SET(CMAKE_CXX_FLAGS "-Wall")
-ELSE()
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
-  SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
-ENDIF()
+set(CMAKE_DEBUG_POSTFIX "D")
 
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReadCFG.cmake)
+find_program(CCACHE ccache)
+if (CCACHE)
+	set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+endif()
 
-ADD_SUBDIRECTORY(Ute)
-ADD_SUBDIRECTORY(Janus)
+add_subdirectory(Ute)
+add_subdirectory(Janus)
 
-OPTION(BUILD_TOOLS "Build tools executables" OFF)
-IF(BUILD_TOOLS)
-  ADD_SUBDIRECTORY(Tools)
-ENDIF()
+option(BUILD_TOOLS "Build tools executables" OFF)
+if (BUILD_TOOLS)
+  add_subdirectory(Tools)
+endif()
 
-OPTION(BUILD_EXAMPLES "Build example executables" OFF)
-IF(BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY(Examples)
-ENDIF()
+option(BUILD_EXAMPLES "Build example executables" OFF)
+if (BUILD_EXAMPLES)
+  add_subdirectory(Examples)
+endif()

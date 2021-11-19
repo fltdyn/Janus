@@ -27,201 +27,141 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(Janus)
-
-readCfg(${CMAKE_CURRENT_SOURCE_DIR}/../configure "config_name;config_version_hex;config_version_dec")
-
-SET(JANUS_LIBRARY_DESCRIPTION ${config_name})
-SET(JANUS_VERSION ${config_version_hex})
-SET(JANUS_VERSION_HEX ${config_version_hex})
-SET(JANUS_VERSION_SHORT ${config_version_dec})
-SET(JANUS_VERSION_LONG "Janus-${config_version_dec}")
-
-SET(ThirdPartyDirectory ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty)
-
-SET(QhullSrcFiles
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/Coordinates.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/Coordinates.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/PointCoordinates.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/PointCoordinates.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/Qhull.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/Qhull.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacet.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacet.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacetList.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacetList.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacetSet.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullFacetSet.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullHyperplane.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullHyperplane.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPoint.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPoint.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPoints.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPoints.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPointSet.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullPointSet.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullQh.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullQh.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullRidge.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullRidge.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullSet.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullSet.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullStat.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullStat.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullVertex.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullVertex.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullVertexSet.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/QhullVertexSet.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/RoadError.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/RoadError.h
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/RoadLogEvent.cpp
-	${ThirdPartyDirectory}/qhull/src/libqhullcpp/RoadLogEvent.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/global_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/stat_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/stat_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/geom2_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/poly2_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/merge_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/merge_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/libqhull_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/libqhull_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/geom_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/geom_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/poly_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/poly_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/qset_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/qset_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/mem_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/mem_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/random_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/random_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/usermem_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/io_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/io_r.h
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/user_r.c
-	${ThirdPartyDirectory}/qhull/src/libqhull_r/user_r.h
+add_library(qhull STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/Coordinates.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/PointCoordinates.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/Qhull.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullFacet.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullFacetList.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullFacetSet.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullHyperplane.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullPoint.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullPoints.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullPointSet.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullQh.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullRidge.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullSet.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullStat.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullVertex.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/QhullVertexSet.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/RoadError.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhullcpp/RoadLogEvent.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/global_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/stat_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/geom2_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/poly2_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/merge_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/libqhull_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/geom_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/poly_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/qset_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/mem_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/random_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/usermem_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/io_r.c
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src/libqhull_r/user_r.c
 )
 
-SET(PugixmlSrcFiles
-	${ThirdPartyDirectory}/pugixml/pugixml.cpp
-	${ThirdPartyDirectory}/pugixml/pugixml.hpp
+target_include_directories(qhull SYSTEM # suppress warnings
+    PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/qhull/src>
 )
 
-SET(JanusSrcFiles
-	Array.cpp
-	Array.h
-	Author.cpp
-	Author.h
-	Bounds.cpp
-	Bounds.h
-	BreakpointDef.cpp
-	BreakpointDef.h
-	CheckData.cpp
-	CheckData.h
-	CheckInputs.h
-	CheckOutputs.h
-	CheckSignal.cpp
-	CheckSignal.h
-	Denominator.h
-	DimensionDef.cpp
-	DimensionDef.h
-	DomFunctions.cpp
-	DomFunctions.h
-	DomTypes.h
-	ElementDefinitionEnum.h
-	ExportMathML.cpp
-	ExportMathML.h
-	FileHeader.cpp
-	FileHeader.h
-	Function.cpp
-	Function.h
-	FunctionDefn.cpp
-	FunctionDefn.h
-	GetDescriptors.cpp
-	GriddedTableDef.cpp
-	GriddedTableDef.h
-	InDependentVarDef.cpp
-	InDependentVarDef.h
-	InternalValues.h
-	Janus.cpp
-	Janus.h
-	JanusConstants.h
-	JanusUtilities.h
-	JanusVariable.cpp
-	JanusVariable.h
-	JanusVariableManager.cpp
-	JanusVariableManager.h
-	LinearInterpolation.cpp
-	MathMLDataClass.cpp
-	MathMLDataClass.h
-	Model.cpp
-	Model.h
-	Modification.cpp
-	Modification.h
-	Numerator.h
-	ParseMathML.cpp
-	ParseMathML.h
-	PolyInterpolation.cpp
-	PropertyDef.cpp
-	PropertyDef.h
-	Provenance.cpp
-	Provenance.h
-	Reference.cpp
-	Reference.h
-	Signal.cpp
-	Signal.h
-	SignalDef.cpp
-	SignalDef.h
-	Signals.cpp
-	Signals.h
-	SignalList.cpp
-	SignalList.h
-	SolveMathML.cpp
-	SolveMathML.h
-	StatespaceFn.cpp
-	StatespaceFn.h
-	StaticShot.cpp
-	StaticShot.h
-	TransferFn.cpp
-	TransferFn.h
-	Uncertainty.cpp
-	Uncertainty.h
-	UngriddedInterpolation.cpp
-	UngriddedTableDef.cpp
-	UngriddedTableDef.h
-	VariableDef.cpp
-	VariableDef.h
-	VariableDefExprTkParseMathML.cpp
-	VariableDefExprTkScript.cpp
-	VariableDefLuaScript.cpp
-	XmlElementDefinition.h
-	JanusConfig.h
+target_compile_features(qhull PRIVATE cxx_std_11)
+
+add_library(pugixml STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/pugixml/pugixml.cpp
 )
 
-SET(SrcFiles 
-	${JanusSrcFiles} 
-	"${QhullSrcFiles}"
-	"${PugixmlSrcFiles}"
+target_include_directories(pugixml SYSTEM # suppress warnings
+    PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/pugixml>
 )
 
-SOURCE_GROUP("Source Files" FILES ${SrcFiles})
+target_compile_features(pugixml PRIVATE cxx_std_11)
 
-# Needed to be able to access JanusConfig.h
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+add_library(Janus STATIC 
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Array.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Author.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Bounds.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/BreakpointDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/CheckData.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/CheckSignal.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/DimensionDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/DomFunctions.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/ExportMathML.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/FileHeader.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Function.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/FunctionDefn.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/GetDescriptors.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/GriddedTableDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/InDependentVarDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Janus.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/JanusVariable.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/JanusVariableManager.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/LinearInterpolation.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/MathMLDataClass.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Model.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Modification.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/ParseMathML.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/PolyInterpolation.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/PropertyDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Provenance.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Reference.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Signal.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/SignalDef.cpp	
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Signals.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/SignalList.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/SolveMathML.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/StatespaceFn.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/StaticShot.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/TransferFn.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Uncertainty.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/UngriddedInterpolation.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/UngriddedTableDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/VariableDef.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/VariableDefExprTkParseMathML.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/VariableDefExprTkScript.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/VariableDefLuaScript.cpp
+)
 
-ADD_LIBRARY(Janus STATIC ${SrcFiles})
-SET_TARGET_PROPERTIES(Janus PROPERTIES PREFIX "lib")
+target_include_directories(Janus 
+    PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    PRIVATE 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
 
-IF(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	SET_TARGET_PROPERTIES(Janus PROPERTIES COMPILE_FLAGS "/bigobj")
-ENDIF()
+target_compile_features(Janus PRIVATE cxx_std_11)
+   
 
-TARGET_INCLUDE_DIRECTORIES(Janus PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-TARGET_INCLUDE_DIRECTORIES(Janus PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
-TARGET_INCLUDE_DIRECTORIES(Janus PUBLIC "${ThirdPartyDirectory}/qhull/src")
-TARGET_INCLUDE_DIRECTORIES(Janus PUBLIC "${ThirdPartyDirectory}/pugixml")
+if (UNIX) 
+	target_compile_options(Janus
+		PRIVATE 
+			$<$<CONFIG:RELEASE>:-O3>
+	)
+elseif (MSVC)
+	target_compile_options(Janus
+		PRIVATE 
+			$<$<CONFIG:RELEASE>:-O2>
+			-D_CRT_SECURE_NO_WARNINGS
+			-DNOMINMAX
+	)
+endif()
 
-TARGET_LINK_LIBRARIES(Janus Ute ${OPENSSL_LIBRARIES})
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	target_compile_options(Janus PRIVATE -fdiagnostics-color=always)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	target_compile_options(Janus PRIVATE -fcolor-diagnostics)
+endif()
 
-INSTALL(DIRECTORY . DESTINATION "include/Janus/Janus" FILES_MATCHING PATTERN "*.h")
-INSTALL(TARGETS Janus DESTINATION lib)
+if (MSVC)
+    set_target_properties(Janus PROPERTIES COMPILE_FLAGS "/bigobj")
+endif()
+
+target_link_libraries(Janus 
+    PUBLIC 
+        Ute
+        qhull
+        pugixml 
+)

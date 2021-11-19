@@ -27,14 +27,20 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-FUNCTION(BUILDER name)
-  ADD_EXECUTABLE(${name} ${name}.cpp)
-  TARGET_LINK_LIBRARIES(${name} LINK_PUBLIC Janus)
-ENDFUNCTION()
+function(builder NAME)
+  add_executable(${NAME} ${NAME}.cpp)
+  target_link_libraries(${NAME} PUBLIC Janus)
+endfunction()
 
-FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+set(FILES 
+	${CMAKE_CURRENT_SOURCE_DIR}/CombinedExample.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/GriddedTableExample.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/JanusVariableManagerExample.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MathMLExample.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/SetVarDefExample.cpp
+)
 
-FOREACH(file ${files})
-  GET_FILENAME_COMPONENT(file_no_ext "${file}" NAME_WE)
-  BUILDER("${file_no_ext}")
-ENDFOREACH()
+foreach(FILE ${FILES})
+  get_filename_component(FILE_NO_EXT "${FILE}" NAME_WE)
+  builder("${FILE_NO_EXT}")
+endforeach()
