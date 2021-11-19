@@ -38,7 +38,7 @@
 
 using namespace std;
 
-// #define DEBUG_PRINT( ...) printf( __VA_ARGS__)
+//#define DEBUG_PRINT( ...) printf( __VA_ARGS__)
 #define DEBUG_PRINT( ...)
 
 template<typename _Kty, class _Pr = std::less<_Kty>, class _Alloc = std::allocator<_Kty>>
@@ -57,9 +57,9 @@ std::set<_Kty,_Pr,_Alloc> exclusive_to_first( std::set<_Kty,_Pr,_Alloc> s1, cons
 
 enum PARAMS
 {
-  XML_FILENAME,
-  INDVARS,
-  DEPVARS,
+  PARAM_XML_FILENAME,
+  PARAM_INDVARS,
+  PARAM_DEPVARS,
   PARAM_COUNT
 };
 
@@ -68,6 +68,8 @@ enum POINTERS
   JANUS,
   INDVARIDS,
   DEPVARIDS,
+  INDVARS,
+  DEPVARS,
   POINTER_COUNT
 };
 
@@ -76,38 +78,40 @@ static void mdlInitializeSizes( SimStruct* S)
   ssSetNumSFcnParams( S, PARAM_COUNT);
   if ( ssGetNumSFcnParams( S) != ssGetSFcnParamsCount( S)) return;
 
-  ssSetSFcnParamTunable( S, XML_FILENAME, 0);
-  ssSetSFcnParamTunable( S, INDVARS, 0);
-  ssSetSFcnParamTunable( S, DEPVARS, 0);
+  ssSetSFcnParamTunable( S, PARAM_XML_FILENAME, 0);
+  ssSetSFcnParamTunable( S, PARAM_INDVARS, 0);
+  ssSetSFcnParamTunable( S, PARAM_DEPVARS, 0);
 
   ssSetNumContStates( S, 0);
   ssSetNumDiscStates( S, 0);
 
-  if ( !ssSetNumInputPorts( S, 1)) return;
-  if ( !ssSetNumOutputPorts( S, 1)) return;
-
   // Get number of independent variables
-  const mxArray* indvarArray = ssGetSFcnParam( S, INDVARS);
-  if ( mxGetClassID( indvarArray) != mxCHAR_CLASS) {
-    ssSetErrorStatus( S, "Independent varIDs must be a string array.");
-    return;
+  const mxArray* indvarArray = ssGetSFcnParam( S, PARAM_INDVARS);
+  if ( mxGetClassID( indvarArray) == mxCHAR_CLASS) {
+    const int nIndVars = mxGetM( indvarArray);
+    DEBUG_PRINT( "nIndVars: %d\n", nIndVars);
+  
+    if ( !ssSetNumInputPorts( S, 1)) return;
+    ssSetInputPortWidth( S, 0, nIndVars);
+
+    ssSetInputPortRequiredContiguous( S, 0, false); 
+    ssSetInputPortDirectFeedThrough( S, 0, 1);
   }
-  const int nIndVars = mxGetM( indvarArray);
-  DEBUG_PRINT( "nIndVars: %d\n", nIndVars);
-  ssSetInputPortWidth( S, 0, nIndVars);
+  else {
+    if ( !ssSetNumInputPorts( S, 0)) return;
+  }
 
   // Get number of dependent variables
-  const mxArray* depvarArray = ssGetSFcnParam( S, DEPVARS);
+  const mxArray* depvarArray = ssGetSFcnParam( S, PARAM_DEPVARS);
   if ( mxGetClassID( depvarArray) != mxCHAR_CLASS) {
     ssSetErrorStatus( S, "Dependent varIDs must be a string array.");
     return;
   }
   const int nDepVars = mxGetM( depvarArray);
   DEBUG_PRINT( "nDepVars: %d\n", nDepVars);
-  ssSetOutputPortWidth( S, 0, nDepVars);
 
-  ssSetInputPortRequiredContiguous( S, 0, false); 
-  ssSetInputPortDirectFeedThrough( S, 0, 1);
+  if ( !ssSetNumOutputPorts( S, 1)) return;
+  ssSetOutputPortWidth( S, 0, nDepVars);
 
   ssSetNumSampleTimes( S, 1);
   ssSetNumRWork( S, 0);
@@ -131,10 +135,18 @@ static void mdlStart( SimStruct* S)
   ssGetPWork(S)[JANUS] = new janus::Janus;
   janus::Janus* janus = static_cast<janus::Janus*>( ssGetPWork(S)[JANUS]);
 
+  ssGetPWork(S)[INDVARS] = new vector<janus::VariableDef*>;
+  vector<janus::VariableDef*>* indVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[INDVARS]);
+
+  ssGetPWork(S)[DEPVARS] = new vector<janus::VariableDef*>;
+  vector<janus::VariableDef*>* depVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[DEPVARS]);
+
   int status, n;
 
+  //
   // Get filename and read into Janus
-  const mxArray* filenameArray = ssGetSFcnParam( S, XML_FILENAME);
+  //
+  const mxArray* filenameArray = ssGetSFcnParam( S, PARAM_XML_FILENAME);
   const size_t filenameLength = mxGetM( filenameArray) * mxGetN( filenameArray) + 1;
   char* filename = static_cast<char*>( calloc( filenameLength, sizeof( char)));
   status = mxGetString( filenameArray, filename, filenameLength);
@@ -154,43 +166,87 @@ static void mdlStart( SimStruct* S)
     return;
   }
 
+  //
   // Get independent variables
-  const mxArray* indvarArray = ssGetSFcnParam( S, INDVARS);
-  const int nIndVars = mxGetM( indvarArray);
-  char** indVarIDs = static_cast<char**>( calloc( nIndVars, sizeof( char*)));
-  const int indVarLength = mxGetM( indvarArray) * mxGetN( indvarArray) + 1;
-  char* indVarBuf = static_cast<char*>( calloc( indVarLength, sizeof( char)));
-  status = mxGetString( indvarArray, indVarBuf, indVarLength);
-  if ( status) {
-    ssWarning( S, "Independent varID strings are truncated.");
-  }
-  n = mxGetN( indvarArray);
-  for ( int var = 0; var < nIndVars; ++var) {
-    for ( int i = 0; i < n; ++i) {
-      int iof = var + nIndVars * i;
-      int len = -1;
-      if ( indVarBuf[iof] == ' ') len = i + 1;
-      if ( i + 1 == n) len = i + 2;
-      if ( len != -1) {
-        indVarIDs[var] = static_cast<char*>( calloc( len, sizeof( char)));
-        indVarIDs[var][len-1] = '\0';
-        for ( int k = 0; k < len - 1; ++k) {
-          indVarIDs[var][k] = indVarBuf[var + nIndVars * k];
+  //
+  if ( ssGetNumInputPorts( S) != 0) {
+    const mxArray* indvarArray = ssGetSFcnParam( S, PARAM_INDVARS);
+    const int nIndVars = mxGetM( indvarArray);
+    char** indVarIDs = static_cast<char**>( calloc( nIndVars, sizeof( char*)));
+    const int indVarLength = mxGetM( indvarArray) * mxGetN( indvarArray) + 1;
+    char* indVarBuf = static_cast<char*>( calloc( indVarLength, sizeof( char)));
+    status = mxGetString( indvarArray, indVarBuf, indVarLength);
+    if ( status) {
+      ssWarning( S, "Independent varID strings are truncated.");
+    }
+    n = mxGetN( indvarArray);
+    for ( int var = 0; var < nIndVars; ++var) {
+      for ( int i = 0; i < n; ++i) {
+        int iof = var + nIndVars * i;
+        int len = -1;
+        if ( indVarBuf[iof] == ' ') len = i + 1;
+        if ( i + 1 == n) len = i + 2;
+        if ( len != -1) {
+          indVarIDs[var] = static_cast<char*>( calloc( len, sizeof( char)));
+          indVarIDs[var][len-1] = '\0';
+          for ( int k = 0; k < len - 1; ++k) {
+            indVarIDs[var][k] = indVarBuf[var + nIndVars * k];
+          }
+          DEBUG_PRINT( "indVarIDs[%d]: %s\n", var, indVarIDs[var]);
+          break;
         }
-        DEBUG_PRINT( "indVarIDs[%d]: %s\n", var, indVarIDs[var]);
-        break;
       }
     }
-  }
-  ssSetPWorkValue( S, INDVARIDS, indVarIDs);
-  free( indVarBuf);
+    ssSetPWorkValue( S, INDVARIDS, indVarIDs);
+    free( indVarBuf);
 
+    // Sanity check variables
+    set<string> janusInputVars;
+    const janus::VariableDefList& varDefList = janus->getVariableDef();
+    for ( auto& v : varDefList) {
+      if ( v.isInput()) janusInputVars.insert( v.getVarID());
+    }
+
+    set<string> thisInputVars;
+    for ( int i = 0; i < nIndVars; ++i) {
+      thisInputVars.insert( indVarIDs[i]);
+    }
+
+    const set<string> janusOnlyInputs = exclusive_to_first( janusInputVars, thisInputVars);
+    if ( !janusOnlyInputs.empty()) {
+      string errorMessage = "The following input variables are expected by the dataset:\n";
+      for ( const string& s : janusOnlyInputs) errorMessage += s + "\n";
+      ssWarning( S, errorMessage.c_str());
+    }
+
+    set<string> badInputs;
+    for ( const string& s : thisInputVars) {
+      auto v = janus->findVariableDef( s);
+      if ( v && !v->isInput()) badInputs.insert( s);
+    }
+    if ( !badInputs.empty()) {
+      string errorMessage = "The following input variables are not marked as inputs within the dataset:\n";
+      for ( const string& s : badInputs) errorMessage += s + "\n";
+      ssWarning( S, errorMessage.c_str());
+    }
+
+    // Store varids
+    for ( int i = 0; i < nIndVars; ++i) {
+      indVars->push_back( janus->findVariableDef( indVarIDs[i]));
+    }
+  }
+  else {
+    ssSetPWorkValue( S, INDVARIDS, nullptr);
+  }
+
+  //
   // Get dependent variables
-  const mxArray* depvarArray = ssGetSFcnParam( S, DEPVARS);
+  //
+  const mxArray* depvarArray = ssGetSFcnParam( S, PARAM_DEPVARS);
   const int nDepVars = mxGetM( depvarArray);
   char** depVarIDs = static_cast<char**>( calloc( nDepVars, sizeof( char*)));
   const int depVarLength = mxGetM( depvarArray) * mxGetN( depvarArray) + 1;
-  char* depVarBuf = static_cast<char*>( calloc( indVarLength, sizeof( char)));
+  char* depVarBuf = static_cast<char*>( calloc( depVarLength, sizeof( char)));
   status = mxGetString( depvarArray, depVarBuf, depVarLength);
   if ( status) {
     ssWarning( S, "Dependent varID strings are truncated.");
@@ -216,37 +272,7 @@ static void mdlStart( SimStruct* S)
   ssSetPWorkValue( S, DEPVARIDS, depVarIDs);
   free( depVarBuf);
 
-  // Check that independent variables
-  set<string> janusInputVars;
-  const janus::VariableDefList& varDefList = janus->getVariableDef();
-  for ( auto& v : varDefList) {
-    if ( v.isInput()) janusInputVars.insert( v.getVarID());
-  }
-
-  set<string> thisInputVars;
-  for ( int i = 0; i < nIndVars; ++i) {
-    thisInputVars.insert( indVarIDs[i]);
-  }
-
-  const set<string> janusOnlyInputs = exclusive_to_first( janusInputVars, thisInputVars);
-  if ( !janusOnlyInputs.empty()) {
-    string errorMessage = "The following input variables are expected by the dataset:\n";
-    for ( const string& s : janusOnlyInputs) errorMessage += s + "\n";
-    ssWarning( S, errorMessage.c_str());
-  }
-
-  set<string> badInputs;
-  for ( const string& s : thisInputVars) {
-    auto v = janus->findVariableDef( s);
-    if ( v && !v->isInput()) badInputs.insert( s);
-  }
-  if ( !badInputs.empty()) {
-    string errorMessage = "The following input variables are not marked as inputs within the dataset:\n";
-    for ( const string& s : badInputs) errorMessage += s + "\n";
-    ssWarning( S, errorMessage.c_str());
-  }
-
-  // Check dependent variables
+  // Sanity check variables
   set<string> badOutputs;
   for ( int i = 0; i < nDepVars; ++i) {
     if ( !janus->findVariableDef( depVarIDs[i])) badOutputs.insert( depVarIDs[i]);
@@ -256,48 +282,59 @@ static void mdlStart( SimStruct* S)
     for ( const string& s : badOutputs) errorMessage += s + "\n";
     ssWarning( S, errorMessage.c_str());
   }
+
+  // Store varids
+  for ( int i = 0; i < nDepVars; ++i) {
+    depVars->push_back( janus->findVariableDef( depVarIDs[i]));
+  }
 }
 
 static void mdlOutputs( SimStruct *S, int_T tid)
 {
-  janus::Janus* janus = static_cast<janus::Janus*>( ssGetPWork(S)[JANUS]);
-  char** indVarIDs = static_cast<char**>( ssGetPWork(S)[INDVARIDS]);
-  char** depVarIDs = static_cast<char**>( ssGetPWork(S)[DEPVARIDS]);
+  vector<janus::VariableDef*>* indVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[INDVARS]);
+  vector<janus::VariableDef*>* depVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[DEPVARS]);
 
-  const mxArray* indvarArray = ssGetSFcnParam( S, INDVARS);
-  const int nIndVars = mxGetM( indvarArray);
-  const mxArray* depvarArray = ssGetSFcnParam( S, DEPVARS);
-  const int nDepVars = mxGetM( depvarArray);
+  if ( ssGetNumInputPorts( S) != 0) {
+    InputRealPtrsType uPtrs = ssGetInputPortRealSignalPtrs( S,0);
 
-  InputRealPtrsType uPtrs = ssGetInputPortRealSignalPtrs( S,0);
-  real_T* y = ssGetOutputPortRealSignal( S, 0);
-
-  for ( int i = 0; i < nIndVars; ++i) {
-    real_T u = *uPtrs[i];
-    auto varDef = janus->findVariableDef( indVarIDs[i]);
-    if ( varDef) varDef->setValueMetric( u);
+    for ( size_t i = 0; i < indVars->size(); ++i) {
+      if ( indVars->at( i)) indVars->at( i)->setValueMetric( *uPtrs[i]);
+    }
   }
 
-  for ( int i = 0; i < nDepVars; ++i) {
-    auto varDef = janus->findVariableDef( depVarIDs[i]);
-    if ( varDef) y[i] = varDef->getValueMetric();
+  char** depVarIDs = static_cast<char**>( ssGetPWork(S)[DEPVARIDS]);
+  const mxArray* depvarArray = ssGetSFcnParam( S, PARAM_DEPVARS);
+  const int nDepVars = mxGetM( depvarArray);
+
+  real_T* y = ssGetOutputPortRealSignal( S, 0);
+
+  for ( int i = 0; i < depVars->size(); ++i) {
+    if ( depVars->at( i)) y[i] = depVars->at( i)->getValueMetric();
   }
 }
 
 static void mdlTerminate( SimStruct *S)
 {
   janus::Janus* janus = static_cast<janus::Janus*>( ssGetPWork(S)[JANUS]);
-  char** indVarIDs = static_cast<char**>( ssGetPWork(S)[INDVARIDS]);
-  char** depVarIDs = static_cast<char**>( ssGetPWork(S)[DEPVARIDS]);
-
   delete janus;
 
-  const mxArray* indvarArray = ssGetSFcnParam( S, INDVARS);
-  const int nIndVars = mxGetM( indvarArray);
-  for ( int i = 0; i < nIndVars; ++i) free( indVarIDs[i]);
-  free( indVarIDs);
+  vector<janus::VariableDef*>* indVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[INDVARS]);
+  delete indVars;
 
-  const mxArray* depvarArray = ssGetSFcnParam( S, DEPVARS);
+  vector<janus::VariableDef*>* depVars = static_cast<vector<janus::VariableDef*>*>( ssGetPWork(S)[DEPVARS]);
+  delete depVars;
+
+  void* pIndVarIDs = ssGetPWork(S)[INDVARIDS];
+  if ( pIndVarIDs) {
+    char** indVarIDs = static_cast<char**>( pIndVarIDs);
+    const mxArray* indvarArray = ssGetSFcnParam( S, PARAM_INDVARS);
+    const int nIndVars = mxGetM( indvarArray);
+    for ( int i = 0; i < nIndVars; ++i) free( indVarIDs[i]);
+    free( indVarIDs);
+  }
+
+  char** depVarIDs = static_cast<char**>( ssGetPWork(S)[DEPVARIDS]);
+  const mxArray* depvarArray = ssGetSFcnParam( S, PARAM_DEPVARS);
   const int nDepVars = mxGetM( depvarArray);
   for ( int i = 0; i < nDepVars; ++i) free( depVarIDs[i]);
   free( depVarIDs);

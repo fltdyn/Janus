@@ -238,11 +238,25 @@ namespace janus
     }
 
     /*
-     * Set up independent variable check flags and cross-references.
+     * Check the number of independent variables defined for the function is
+     * compatible with the number of breakpoint definitions within the gridded table.
      */
-    aOptionalSizeT xRef;
-    size_t independentVarElementSize = independentVarElement_.size();
-    InterpolateMethod enumReference;
+    if ( getTableType() == ELEMENT_GRIDDEDTABLE) {
+      size_t gtRef = getTableRef();
+
+      size_t n = janus_->getGriddedTableDef()[ gtRef].getBreakpointRef().size();
+      if ( n != independentVarRefList_.size()) {
+        throw_message( std::invalid_argument,
+          setFunctionName( functionName)
+          << "\n - The number of independent variables ("
+          << independentVarRefList_.size()
+          << ") in function \n      \""
+          << name_ << "\"\n   does not match the number of independent variables in the gridded data table ("
+          << n
+          << ")."
+        );
+      }
+    }
 
     /*
      * Check that the number of independent variables defined for the function is
@@ -253,27 +267,26 @@ namespace janus
       size_t gtRef = getTableRef();
 
       size_t n = janus_->getUngriddedTableDef()[ gtRef].getIndependentVarCount();
-      if ( n != independentVarElementSize) {
+      if ( n != independentVarElement_.size()) {
         throw_message( std::invalid_argument,
           setFunctionName( functionName)
           << "\n - The number of independent variables ("
-          << independentVarElementSize
+          << independentVarElement_.size()
           << ") in function \n      \""
-          << name_ << "\"\n   does not match\n"
-          << "   the number of independent variables in the ungridded data table ("
+          << name_ << "\"\n   does not match the number of independent variables in the ungridded data table ("
           << n
           << ")."
         );
       }
     }
 
-    for ( size_t i = 0; i < independentVarElementSize; i++) {
+    for ( size_t i = 0; i < independentVarElement_.size(); i++) {
       /*
        * Set a single flag if purely discrete, floor or ceiling linear
        * interpolation is to be used.
        * This is used to minimise run time delays (defaults to LINEAR)
        */
-      enumReference = independentVarElement_[ i].getInterpolationMethod();
+      InterpolateMethod enumReference = independentVarElement_[ i].getInterpolationMethod();
       if ( !( ( INTERPOLATE_LINEAR == enumReference) || ( INTERPOLATE_DISCRETE == enumReference)
         || ( INTERPOLATE_FLOOR == enumReference) || ( INTERPOLATE_CEILING == enumReference))) {
         isAllInterpolationLinear_ = false;
@@ -282,7 +295,7 @@ namespace janus
       /*
        * Set the cross reference to the variableDef element
        */
-      xRef = janus_->crossReferenceId( ELEMENT_VARIABLE, independentVarElement_[ i].getVarID());
+      aOptionalSizeT xRef = janus_->crossReferenceId( ELEMENT_VARIABLE, independentVarElement_[ i].getVarID());
       independentVarElement_[ i].setVariableReference( xRef);
     }
   }
