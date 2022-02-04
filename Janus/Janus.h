@@ -82,7 +82,7 @@
 #include "GriddedTableDef.h"
 #include "UngriddedTableDef.h"
 #include "Function.h"
-#include "SignalDef.h"
+#include "SgnlDef.h"
 #include "CheckData.h"
 #include "Author.h"
 #include "Reference.h"

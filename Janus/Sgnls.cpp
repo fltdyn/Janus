@@ -30,7 +30,7 @@
 //------------------------------------------------------------------------//
 // Title:      Janus/Signals
 // Class:      Signals
-// Module:     Signals.cpp
+// Module:     Sgnls.cpp
 // First Date: 2011-11-04
 // Reference:  Janus Reference Manual
 //------------------------------------------------------------------------//
@@ -63,7 +63,7 @@
  */
 
 // Ute Includes
-#include <Janus/Signals.h>
+#include <Janus/Sgnls.h>
 #include <Ute/aMessageStream.h>
 
 #include "DomFunctions.h"

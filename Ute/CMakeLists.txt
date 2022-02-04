@@ -87,3 +87,7 @@ if (MSVC)
 
 	set_target_properties(Ute PROPERTIES COMPILE_FLAGS "/bigobj")
 endif()
+
+if (WIN32)
+	set_target_properties(Ute PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
+endif()

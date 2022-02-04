@@ -108,10 +108,10 @@ add_library(Janus STATIC
  	${CMAKE_CURRENT_SOURCE_DIR}/PropertyDef.cpp
  	${CMAKE_CURRENT_SOURCE_DIR}/Provenance.cpp
  	${CMAKE_CURRENT_SOURCE_DIR}/Reference.cpp
- 	${CMAKE_CURRENT_SOURCE_DIR}/Signal.cpp
- 	${CMAKE_CURRENT_SOURCE_DIR}/SignalDef.cpp	
- 	${CMAKE_CURRENT_SOURCE_DIR}/Signals.cpp
- 	${CMAKE_CURRENT_SOURCE_DIR}/SignalList.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Sgnl.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/SgnlDef.cpp	
+ 	${CMAKE_CURRENT_SOURCE_DIR}/Sgnls.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/SgnlList.cpp
  	${CMAKE_CURRENT_SOURCE_DIR}/SolveMathML.cpp
  	${CMAKE_CURRENT_SOURCE_DIR}/StatespaceFn.cpp
  	${CMAKE_CURRENT_SOURCE_DIR}/StaticShot.cpp
@@ -157,6 +157,10 @@ endif()
 
 if (MSVC)
     set_target_properties(Janus PROPERTIES COMPILE_FLAGS "/bigobj")
+endif()
+
+if (WIN32)
+	set_target_properties(Janus PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
 endif()
 
 target_link_libraries(Janus 

@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------//
 
 /**
- * \file SignalDef.cpp
+ * \file SgnlDef.cpp
  *
  * A SignalDef instance holds in its allocated memory alphanumeric data
  * derived from a \em signalDef element of a DOM corresponding to
@@ -72,7 +72,7 @@
 // Local Includes
 #include "JanusConstants.h"
 #include "DomFunctions.h"
-#include "SignalDef.h"
+#include "SgnlDef.h"
 
 using namespace std;
 using namespace dstoute;

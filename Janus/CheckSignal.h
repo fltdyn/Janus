@@ -50,8 +50,8 @@
  */
 
 // Local Includes
-#include <Janus/SignalList.h>
-#include <Janus/Signals.h>
+#include <Janus/SgnlList.h>
+#include <Janus/Sgnls.h>
 #include "XmlElementDefinition.h"
 
 namespace janus

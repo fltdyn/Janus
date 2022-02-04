@@ -38,7 +38,7 @@
 
 using namespace std;
 
-//#define DEBUG_PRINT( ...) printf( __VA_ARGS__)
+// #define DEBUG_PRINT( ...) printf( __VA_ARGS__)
 #define DEBUG_PRINT( ...)
 
 template<typename _Kty, class _Pr = std::less<_Kty>, class _Alloc = std::allocator<_Kty>>
@@ -181,21 +181,15 @@ static void mdlStart( SimStruct* S)
     }
     n = mxGetN( indvarArray);
     for ( int var = 0; var < nIndVars; ++var) {
-      for ( int i = 0; i < n; ++i) {
-        int iof = var + nIndVars * i;
-        int len = -1;
-        if ( indVarBuf[iof] == ' ') len = i + 1;
-        if ( i + 1 == n) len = i + 2;
-        if ( len != -1) {
-          indVarIDs[var] = static_cast<char*>( calloc( len, sizeof( char)));
-          indVarIDs[var][len-1] = '\0';
-          for ( int k = 0; k < len - 1; ++k) {
-            indVarIDs[var][k] = indVarBuf[var + nIndVars * k];
-          }
-          DEBUG_PRINT( "indVarIDs[%d]: %s\n", var, indVarIDs[var]);
-          break;
-        }
+      indVarIDs[var] = static_cast<char*>( calloc( n + 1, sizeof( char)));
+      int i = 0;
+      for ( ; i < n; ++i) {
+        if ( indVarBuf[var + nIndVars * i] == ' ') break;
+        indVarIDs[var][i] = indVarBuf[var + nIndVars * i];
       }
+      DEBUG_PRINT( "%d\t", i);
+      indVarIDs[var][i] = '\0';
+      DEBUG_PRINT( "indVarIDs[%d]: %s\n", var, indVarIDs[var]);
     }
     ssSetPWorkValue( S, INDVARIDS, indVarIDs);
     free( indVarBuf);
@@ -253,21 +247,15 @@ static void mdlStart( SimStruct* S)
   }
   n = mxGetN( depvarArray);
   for ( int var = 0; var < nDepVars; ++var) {
-    for ( int i = 0; i < n; ++i) {
-      int iof = var + nDepVars * i;
-      int len = -1;
-      if ( depVarBuf[iof] == ' ') len = i + 1;
-      if ( i + 1 == n) len = i + 2;
-      if ( len != -1) {
-        depVarIDs[var] = static_cast<char*>( calloc( len, sizeof( char)));
-        depVarIDs[var][len-1] = '\0';
-        for ( int k = 0; k < len - 1; ++k) {
-          depVarIDs[var][k] = depVarBuf[var + nDepVars * k];
-        }
-        DEBUG_PRINT( "depVarIDs[%d]: %s\n", var, depVarIDs[var]);
-        break;
-      }
+    depVarIDs[var] = static_cast<char*>( calloc( n + 1, sizeof( char)));
+    int i = 0;
+    for ( ; i < n; ++i) {
+      if ( depVarBuf[var + nDepVars * i] == ' ') break;
+      depVarIDs[var][i] = depVarBuf[var + nDepVars * i];
     }
+    DEBUG_PRINT( "%d\t", i);
+    depVarIDs[var][i] = '\0';
+    DEBUG_PRINT( "depVarIDs[%d]: %s\n", var, depVarIDs[var]);
   }
   ssSetPWorkValue( S, DEPVARIDS, depVarIDs);
   free( depVarBuf);

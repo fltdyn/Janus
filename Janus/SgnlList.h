@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------//
 
 /**
- * \file SignalList.h
+ * \file SgnlList.h
  *
  * A SignalList instance behaves as a container for a list of Signal definition
  * elements (either signalDef or signalRef), which provide the properties of
@@ -61,7 +61,7 @@
 
 // Local Includes
 #include "XmlElementDefinition.h"
-#include "SignalDef.h"
+#include "SgnlDef.h"
 
 namespace janus {
 

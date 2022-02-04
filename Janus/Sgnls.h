@@ -39,7 +39,7 @@
 //------------------------------------------------------------------------//
 
 /**
- * \file Signals.h
+ * \file Sgnls.h
  *
  * A Signals instance functions as a container for the Signal class, and
  * provides the functions that allow a calling StaticShot instance to access
@@ -65,7 +65,7 @@
 
 // Local Includes
 #include "XmlElementDefinition.h"
-#include "Signal.h"
+#include "Sgnl.h"
 
 namespace janus {
 

@@ -30,7 +30,7 @@
 //------------------------------------------------------------------------//
 // Title:      Janus/SignalList
 // Class:      SignalList
-// Module:     SignalList.cpp
+// Module:     SgnlList.cpp
 // First Date: 2017-09-06
 // Reference:  Janus Reference Manual
 //------------------------------------------------------------------------//
@@ -53,7 +53,7 @@
  */
 
 // Ute Includes
-#include <Janus/SignalList.h>
+#include <Janus/SgnlList.h>
 #include <Ute/aMessageStream.h>
 #include <Ute/aOptional.h>
 

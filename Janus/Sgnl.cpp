@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------//
 
 /**
- * \file Signal.cpp
+ * \file Sgnl.cpp
  *
  * A Signal instance holds in its allocated memory alphanumeric data
  * derived from a \em signal element of a DOM corresponding to
@@ -72,7 +72,7 @@
 #include <Ute/aMath.h>
 
 #include "DomFunctions.h"
-#include "Signal.h"
+#include "Sgnl.h"
 
 using namespace std;
 using namespace dstoute;
