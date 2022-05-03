@@ -48,6 +48,7 @@
  */
 
 // C++ Includes
+#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -155,6 +156,38 @@ JanusVariable::JanusVariable( const aString &variableName, JanusVariableType var
    doUnitConversion_( false)
 {
   requiredValue_ = findUnits( specificUnits);
+}
+
+set<aString> JanusVariable::getAllDependencies() const
+{
+  assert( janusFile_);
+  if ( !janusFile_ || !variableDef_) return {};
+
+  set<aOptionalSizeT> workingIndices = { janusFile_->getVariableIndex( variableDef_->getVarID())};
+  set<aOptionalSizeT> outputIndices;
+
+  while ( !workingIndices.empty()) {
+    const aOptionalSizeT tIndex = *workingIndices.begin();
+    if ( tIndex.isValid()) {
+      outputIndices.insert( tIndex);
+      const vector<size_t>& tIndvarIndices = janusFile_->getVariableDef( tIndex).getIndependentVarRef();
+      for ( size_t i : tIndvarIndices) {
+        if ( outputIndices.find( i) == outputIndices.end()) {
+          workingIndices.insert( i);
+        }
+      }
+    }
+    workingIndices.erase( tIndex);
+  }
+
+  workingIndices.erase( janusFile_->getVariableIndex( variableDef_->getVarID())); // Remove this
+
+  set<aString> indvars;
+  for ( size_t i : outputIndices) {
+    indvars.insert( janusFile_->getVariableDef( i).getVarID());
+  }
+
+  return indvars;
 }
 
 void JanusVariable::setJanusFile( janus::Janus *janusFile)

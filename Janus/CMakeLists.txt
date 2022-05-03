@@ -157,10 +157,8 @@ endif()
 
 if (MSVC)
     set_target_properties(Janus PROPERTIES COMPILE_FLAGS "/bigobj")
-endif()
-
-if (WIN32)
-	set_target_properties(Janus PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
+elseif (WIN32)
+    set_target_properties(Ute PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
 endif()
 
 target_link_libraries(Janus 

@@ -78,9 +78,9 @@ static void mdlInitializeSizes( SimStruct* S)
   ssSetNumSFcnParams( S, PARAM_COUNT);
   if ( ssGetNumSFcnParams( S) != ssGetSFcnParamsCount( S)) return;
 
-  ssSetSFcnParamTunable( S, PARAM_XML_FILENAME, 0);
-  ssSetSFcnParamTunable( S, PARAM_INDVARS, 0);
-  ssSetSFcnParamTunable( S, PARAM_DEPVARS, 0);
+  ssSetSFcnParamTunable( S, PARAM_XML_FILENAME, SS_PRM_NOT_TUNABLE);
+  ssSetSFcnParamTunable( S, PARAM_INDVARS, SS_PRM_NOT_TUNABLE);
+  ssSetSFcnParamTunable( S, PARAM_DEPVARS, SS_PRM_NOT_TUNABLE);
 
   ssSetNumContStates( S, 0);
   ssSetNumDiscStates( S, 0);
@@ -104,7 +104,7 @@ static void mdlInitializeSizes( SimStruct* S)
   // Get number of dependent variables
   const mxArray* depvarArray = ssGetSFcnParam( S, PARAM_DEPVARS);
   if ( mxGetClassID( depvarArray) != mxCHAR_CLASS) {
-    ssSetErrorStatus( S, "Dependent varIDs must be a string array.");
+    // ssSetErrorStatus( S, "Dependent varIDs must be a string array.");
     return;
   }
   const int nDepVars = mxGetM( depvarArray);
@@ -121,17 +121,23 @@ static void mdlInitializeSizes( SimStruct* S)
   ssSetNumNonsampledZCs( S, 0);
 
   ssSetOptions( S, 0);
+  /*ssSetOptions( S, SS_OPTION_USE_TLC_WITH_ACCELERATOR | SS_OPTION_WORKS_WITH_CODE_REUSE);
+  ssSetSupportedForCodeReuseAcrossModels( S, 1);*/
 }
 
 static void mdlInitializeSampleTimes( SimStruct* S)
 {
-  ssSetSampleTime( S, 0, CONTINUOUS_SAMPLE_TIME);
+  ssSetSampleTime( S, 0, INHERITED_SAMPLE_TIME);
   ssSetOffsetTime( S, 0, 0.0);
+
+  ssSetModelReferenceSampleTimeInheritanceRule( S, INHERITED_SAMPLE_TIME);
 }
 
 #define MDL_START
 static void mdlStart( SimStruct* S)
 {
+  if ( ssGetNumOutputPorts( S) == 0) return;
+
   ssGetPWork(S)[JANUS] = new janus::Janus;
   janus::Janus* janus = static_cast<janus::Janus*>( ssGetPWork(S)[JANUS]);
 
@@ -152,7 +158,7 @@ static void mdlStart( SimStruct* S)
   status = mxGetString( filenameArray, filename, filenameLength);
   DEBUG_PRINT( "filename: %s\n", filename);
   if ( status) {
-    ssSetErrorStatus( S, "XML filename could not be read");
+    // ssSetErrorStatus( S, "XML filename could not be read");
     return;
   }
 

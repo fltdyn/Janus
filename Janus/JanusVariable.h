@@ -61,6 +61,8 @@
 #include <Ute/aUnits.h>
 #include <Ute/aOptional.h>
 
+#include <set>
+
 // ----------------
 // Class Definition
 // ----------------
@@ -154,6 +156,8 @@ class JanusVariable
   bool isState()         const { return isAvailable() ? variableDef_->isState()         : false;}
   bool isStateDeriv()    const { return isAvailable() ? variableDef_->isStateDeriv()    : false;}
   bool isStdAIAA()       const { return isAvailable() ? variableDef_->isStdAIAA()       : false;}
+
+  std::set<dstoute::aString> getAllDependencies() const;
 
   friend class JanusVariableManager;
 

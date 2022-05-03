@@ -718,6 +718,9 @@ namespace janus {
      * \return A reference to the list of BreakpointDef instances is returned.
      */
     BreakpointDefList& getBreakpointDef() { return breakpointDef_;}
+    const BreakpointDefList& getBreakpointDef() const { return breakpointDef_;}
+
+    const BreakpointDef& getBreakpointDef( const dstoute::aString& bpId) const;
 
     /**
      * Within the DOM, a \em griddedTableDef contains points arranged in an

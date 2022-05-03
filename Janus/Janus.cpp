@@ -753,6 +753,19 @@ bool Janus::propertyExists( const dstoute::aString& ptyID)
 
 //------------------------------------------------------------------------//
 
+const BreakpointDef& Janus::getBreakpointDef( const aString& bpId) const
+{
+  for ( const auto& bp : breakpointDef_) {
+    if ( bp.getBpID() == bpId) return bp;
+  }
+  throw_message( std::range_error,
+    setFunctionName( "Janus::getBreakpointDef()")
+    << "\n - Can't find bpID \"" << bpId << "\"."
+  );
+}
+
+//------------------------------------------------------------------------//
+
 SignalDef& Janus::getSignalDef( const aString& sigID)
 {
   for ( size_t i = 0; i < signalDef_.size(); ++i) {
