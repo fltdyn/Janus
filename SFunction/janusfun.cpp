@@ -149,7 +149,7 @@ Janus* getJanusInstance( int nrhs, const mxArray *prhs[])
   if ( mxIsChar(prhs[0]) != 1) {
     mexErrMsgTxt("Dataset name must be a string.");
   }
-  int iLen = ( mxGetM(prhs[0]) * mxGetN(prhs[0]) ) + 1;
+  size_t iLen = ( mxGetM( prhs[0]) * mxGetN( prhs[0])) + 1;
   char* filename = (char*)mxMalloc( iLen * sizeof(char));
   int status = mxGetString( prhs[0], filename, iLen );
   if ( status != 0) {
@@ -159,11 +159,15 @@ Janus* getJanusInstance( int nrhs, const mxArray *prhs[])
 
   if ( nrhs == 1) {
     string janusCommand = filename;
+    mxFree( filename);
     if ( janusCommand == "@reset") {
       for ( unsigned int i = 0; i < janusList.size(); ++i) {
         delete janusList[i].janus_;
       }
       janusList.clear();
+    }
+    else {
+      mexErrMsgTxt( "Unrecognised janus command");
     }
     return nullptr;
   }
@@ -171,7 +175,7 @@ Janus* getJanusInstance( int nrhs, const mxArray *prhs[])
   //
   // Check for existing instance of this XML file within JanusList.
   //
-  Janus *janus = nullptr;
+  Janus* janus = nullptr;
   for ( unsigned int i = 0; janus == 0&& i < janusList.size(); ++i) {
     if ( janusList[i].fileName_ == filename) {
       janus = janusList[i].janus_;
@@ -181,7 +185,7 @@ Janus* getJanusInstance( int nrhs, const mxArray *prhs[])
   //
   // If instance does not exist in JanusList, create a new instance.
   //
-  if ( janus == 0) {
+  if ( !janus) {
     janus = new Janus;
     try {
       janus->setXmlFileName( filename);
@@ -189,7 +193,7 @@ Janus* getJanusInstance( int nrhs, const mxArray *prhs[])
     catch ( exception &excep ) {
       mexErrMsgTxt( excep.what() );
     }
-    janusList.push_back(JanusElement(janus, filename));
+    janusList.push_back( JanusElement( janus, filename));
   }
 
   mxFree( filename);
@@ -203,7 +207,7 @@ string getDepVarId( int nrhs, const mxArray *prhs[])
   if ( mxIsChar(prhs[1]) != 1) {
     mexErrMsgTxt( "Dependent variable ID must be a string.");
   }
-  int iLen = ( mxGetM(prhs[1]) * mxGetN(prhs[1]) ) + 1;
+  size_t iLen = ( mxGetM( prhs[1]) * mxGetN( prhs[1])) + 1;
   char* depVarID = (char*)mxMalloc( iLen * sizeof(char));
   int status = mxGetString( prhs[1], depVarID, iLen);
   if ( status != 0) {
@@ -221,27 +225,27 @@ vector<string> getIndepVarIds( int nrhs, const mxArray *prhs[])
   if (mxIsChar(prhs[2]) != 1) {
     mexErrMsgTxt("Independent varIDs must be a string array.");
   }
-  int iInp = mxGetM(prhs[2]);
+  size_t iInp = mxGetM( prhs[2]);
   char** indepVarID = (char**)mxCalloc(iInp, sizeof(char*));
-  int iLen = (mxGetM(prhs[2]) * mxGetN(prhs[2]) ) + 1;
+  size_t iLen = ( mxGetM(prhs[2]) * mxGetN( prhs[2])) + 1;
   char* input_buf = (char*)mxCalloc(iLen, sizeof(char));
   int status = mxGetString(prhs[2], input_buf, iLen );
   if ( 0 != status ) {
     mexWarnMsgTxt("Independent varID strings are truncated.");
   }
-  iLen = mxGetN(prhs[2]);
-  int iof, j2;
-  for ( int i = 0; i < iInp ; i++) {
-    for ( int j = 0; j < iLen ; j++) {
+  iLen = mxGetN( prhs[2]);
+  size_t iof, j2;
+  for ( size_t i = 0; i < iInp ; i++) {
+    for ( size_t j = 0; j < iLen ; j++) {
       iof = i + iInp * j;
-      if ( ' ' == input_buf[iof]|| j == iLen - 1) {
+      if ( ' ' == input_buf[iof] || j + 1 == iLen) {
         j2 = j + 1;
         if ( ' ' != input_buf[iof]) {
           j2 = j2 + 1;
         }
         indepVarID[i] = (char*)mxCalloc(j2, sizeof(char));
         indepVarID[i][j2 - 1] = '\0';
-        for ( int k = 0; k < j2 - 1; k++) {
+        for ( size_t k = 0; k + 1 < j2; k++) {
           indepVarID[i][k] = input_buf[i + iInp * k ];
         }
         break;
@@ -263,8 +267,8 @@ void writeValuesOutput( Janus* janus, int nlhs, mxArray *plhs[], int nrhs, const
   const string depVarId = getDepVarId( nrhs, prhs);
   const vector<string> indepVarId = getIndepVarIds( nrhs, prhs);
 
-  const int nInp  = nrhs > 3 ? mxGetM( prhs[3]) : 0;
-  const int nCols = std::max( nrhs > 3 ? int( mxGetN( prhs[3])) : 1, 1); // Getting a constant
+  const size_t nInp  = nrhs > 3 ? mxGetM( prhs[3]) : 0;
+  const size_t nCols = std::max( nrhs > 3 ? int( mxGetN( prhs[3])) : 1, 1); // Getting a constant
 
   if ( nInp != int( indepVarId.size())) {
     stringstream errStr;
@@ -302,11 +306,15 @@ void writeValuesOutput( Janus* janus, int nlhs, mxArray *plhs[], int nrhs, const
     }
   }
 
-  for ( int i = 0; i < nCols ; i++) {
-    for ( int j = 0; j < nInp ; j++) {
-      int iof = j + i * nInp;
+  for ( size_t i = 0; i < nCols ; i++) {
+    for ( size_t j = 0; j < nInp ; j++) {
+      size_t iof = j + i * nInp;
       try {
+#ifdef JANUSFUN_SI
+        janus->getVariableDef( indepVarId[j]).setValueSI( x[iof]);
+#else
         janus->getVariableDef( indepVarId[j]).setValue( x[iof]);
+#endif
       }
       catch (...) {
         stringstream errStr;
@@ -314,8 +322,12 @@ void writeValuesOutput( Janus* janus, int nlhs, mxArray *plhs[], int nrhs, const
         mexErrMsgTxt( errStr.str().c_str() );
       }
     }
-    if ( 4 == nrhs) {
+    if ( nrhs != 5) {
+#ifdef JANUSFUN_SI
+      y[i] = outputVarDef.getValueSI();
+#else
       y[i] = outputVarDef.getValue();
+#endif
     }
     else if ( 0 < numSigmas) {
       y[i] = outputVarDef.getUncertaintyValue( size_t( numSigmas));
@@ -345,9 +357,15 @@ void writeUnitsOutput( Janus* janus, int nlhs, mxArray *plhs[], int nrhs, const 
 
   const string depVarId = getDepVarId( nrhs, prhs);
   VariableDef& outputVarDef = janus->getVariableDef( depVarId);
-  const string unitString = outputVarDef.getUnits();
+#ifdef JANUSFUN_SI
+  const string sourceUnitsString = outputVarDef.getUnits();
+  const dstoute::aUnits units( sourceUnitsString);
+  const string unitsString = units.unitsSI();
+#else
+  const string unitsString = outputVarDef.getUnits();
+#endif
   const char **unitCharArray = (const char**)mxCalloc(1, sizeof(const char*));
-  *unitCharArray = unitString.c_str();
+  *unitCharArray = unitsString.c_str();
   plhs[2] = mxCreateCharMatrixFromStrings( 1, unitCharArray);
   mxFree( unitCharArray );
 }
